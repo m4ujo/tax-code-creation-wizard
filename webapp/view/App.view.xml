@@ -1,0 +1,124 @@
+<mvc:View controllerName="taco.controller.App"
+  xmlns="sap.m"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:form="sap.ui.layout.form"
+  xmlns:table="sap.ui.table"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout"
+  xmlns:u="sap.ui.unified" height="100%" displayBlock="true">
+  <App width="100%">
+    <NavContainer id="wizardNavContainer" width="100%">
+      <pages>
+        <Page id="taxCodeWizardPage" title="{i18n>tacoWizardTitle}">
+          <content>
+            <Wizard id="tacoWizard" width="100%" complete="onComplete" finishButtonText="Review">
+              <WizardStep title="{i18n>step1Title}" validated="false" id="step-taxProperties" complete="completeTaxProperties">
+                <form:SimpleForm editable="true">
+                  <FlexBox alignItems="Center">
+                    <Label text="{i18n>lblCountryKey}" labelFor="cbx-countryKey" />
+                    <ComboBox required="true" id="cbx-countryKey" change="validateTaxProperties" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '300' }">
+                      <core:ListItem key="{land1}" text="{land1}" additionalText="{landx}" />
+                    </ComboBox>
+                  </FlexBox>
+                  <FlexBox alignItems="Center">
+                    <Label text="{i18n>lblTaxType}" labelFor="cbx-taxType" />
+                    <ComboBox required="true" id="cbx-taxType" change="validateTaxProperties" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'mwart' } }">
+                      <core:ListItem key="{mwart}" text="{mwart_desc}" additionalText="{mwart}" />
+                    </ComboBox>
+                  </FlexBox>
+                </form:SimpleForm>
+              </WizardStep>
+              <WizardStep title="{i18n>step2Title}" validated="false" id="step-vatScenarios" complete="completeVatScenarios">
+                <form:SimpleForm editable="true">
+                  <Label text="{i18n>lblVatScenario}" labelFor="cbx-vatScenarios" />
+                  <ComboBox required="true" id="cbx-vatScenarios" change="validateVatScenario" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'scen' } }">
+                    <core:ListItem text="{scen}" additionalText="{scen_desc}" />
+                  </ComboBox>
+                </form:SimpleForm>
+                <Button text="Back" press="backToStep1" />
+              </WizardStep>
+              <WizardStep title="{i18n>step3Title}" validated="true">
+                <form:SimpleForm editable="true">
+                  <html:div id="">
+                    <Label text="{i18n>lblTaxCodeId}" labelFor="input-taxCodeId" />
+                    <Input id="input-taxCodeId" width="100%" required="true" class="input" maxLength="2" />
+                  </html:div>
+
+                  <Label text="Tax Name" labelFor="input-taxName" />
+                  <Input id="input-taxName" width="100%" required="true" class="input" maxLength="2" />
+
+                  <Label text="Tax Jurisdiction" labelFor="input-taxJur" />
+                  <Input id="input-taxJur" width="100%" required="true" class="input" maxLength="2" />
+
+                  <CheckBox id="chk-checkId" text="{i18n>chkCheckId}" />
+
+                  <Label text="{i18n>lblReportCountry}" labelFor="cbx-reportCountry" />
+                  <ComboBox required="true" id="cbx-reportCountry" change="" showSecondaryValues="true" items="{ path: '/CountriesData', sorter: { path: 'key' }, length : '300' }">
+                    <core:ListItem key="{key}" text="{key}" additionalText="{name}" />
+                  </ComboBox>
+
+                  <Label text="{i18n>lblEuCode}" labelFor="cbx-euCode" />
+                  <ComboBox required="true" id="cbx-euCode" change="" showSecondaryValues="true" items="{ path: '/EUCodedata', sorter: { path: 'description' }, length : '300' }">
+                    <core:ListItem key="{code}" text="{code}" additionalText="{description}" />
+                  </ComboBox>
+
+                  <Label text="{i18n>lblTargetTaxCode}" labelFor="cbx-targetTaxCode" />
+                  <ComboBox required="true" id="cbx-targetTaxCode" change="" showSecondaryValues="true" items="{ path: '/TargetTaxCodeData', sorter: { path: 'code' }, length : '300' }">
+                    <core:ListItem key="{code}" text="{code}" additionalText="{description}" />
+                  </ComboBox>
+
+                  <Label text="{i18n>lblTolerance}" labelFor="input-tolerance" />
+                  <Input id="input-tolerance" width="100%" required="true" class="input sMedium" liveChange="validateNumericInput" />
+
+                </form:SimpleForm>
+                <Button text="Back" press="backToStep2" />
+              </WizardStep>
+              <WizardStep title="{i18n>step4Title}" validated="true">
+                <table:Table id="table-revTaxRates" rows="{/TaxRatesData}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
+                  <table:columns>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblConditionType}" />
+                      <table:template>
+                        <Text text="{ConditionType}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="20%">
+                      <Label text="{i18n>lblDescription}" />
+                      <table:template>
+                        <Text text="{Description}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblAccountKey}" />
+                      <table:template>
+                        <Label text="{AccountKey}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblGLAccount}" />
+                      <table:template>
+                        <ObjectStatus text="{GLAccount}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblRate}" />
+                      <table:template>
+                        <Input value="{Rate}" liveChange="validateNumericInput" />
+                      </table:template>
+                    </table:Column>
+                  </table:columns>
+                </table:Table>
+              </WizardStep>
+            </Wizard>
+          </content>
+        </Page>
+        <Page id="taxCodeReviewPage" title="{i18n>tacoReviewTitle}">
+          <content>
+            <Text text="Review" />
+          </content>
+        </Page>
+      </pages>
+    </NavContainer>
+  </App>
+</mvc:View>

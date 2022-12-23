@@ -1,0 +1,7 @@
+{
+  "extends": ["standard", "standard-jsx"],
+  "globals": {
+    "sap": true,
+		"jQuery": true
+  }
+}
