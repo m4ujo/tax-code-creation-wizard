@@ -13,5 +13,8 @@
   "devDependencies": {
     "eslint": "^8.30.0",
     "standard": "^17.0.0"
+  },
+  "dependencies": {
+    "@ui5/cli": "^2.14.17"
   }
 }
