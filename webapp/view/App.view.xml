@@ -14,68 +14,89 @@
           <content>
             <Wizard id="tacoWizard" width="100%" complete="onComplete" finishButtonText="Review">
               <WizardStep title="{i18n>step1Title}" validated="false" id="step-taxProperties" complete="completeTaxProperties">
-                <form:SimpleForm editable="true">
-                  <FlexBox alignItems="Center">
-                    <Label text="{i18n>lblCountryKey}" labelFor="cbx-countryKey" />
+                <form:SimpleForm editable="true" class="flex">
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblCountryKey}" labelFor="cbx-countryKey"/>
                     <ComboBox required="true" id="cbx-countryKey" change="validateTaxProperties" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '300' }">
                       <core:ListItem key="{land1}" text="{land1}" additionalText="{landx}" />
                     </ComboBox>
-                  </FlexBox>
-                  <FlexBox alignItems="Center">
+                  </html:div>
+
+                  <html:div class="form-row">
                     <Label text="{i18n>lblTaxType}" labelFor="cbx-taxType" />
                     <ComboBox required="true" id="cbx-taxType" change="validateTaxProperties" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'mwart' } }">
                       <core:ListItem key="{mwart}" text="{mwart_desc}" additionalText="{mwart}" />
                     </ComboBox>
-                  </FlexBox>
+                  </html:div>
                 </form:SimpleForm>
               </WizardStep>
               <WizardStep title="{i18n>step2Title}" validated="false" id="step-vatScenarios" complete="completeVatScenarios">
                 <form:SimpleForm editable="true">
-                  <Label text="{i18n>lblVatScenario}" labelFor="cbx-vatScenarios" />
-                  <ComboBox required="true" id="cbx-vatScenarios" change="validateVatScenario" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'scen' } }">
-                    <core:ListItem text="{scen}" additionalText="{scen_desc}" />
-                  </ComboBox>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblVatScenario}" labelFor="cbx-vatScenarios" />
+                    <ComboBox required="true" id="cbx-vatScenarios" change="validateVatScenario" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'scen' } }">
+                      <core:ListItem text="{scen}" additionalText="{scen_desc}" />
+                    </ComboBox>
+                  </html:div>
                 </form:SimpleForm>
                 <Button text="Back" press="backToStep1" />
               </WizardStep>
-              <WizardStep title="{i18n>step3Title}" validated="true">
-                <form:SimpleForm editable="true">
-                  <html:div id="">
-                    <Label text="{i18n>lblTaxCodeId}" labelFor="input-taxCodeId" />
-                    <Input id="input-taxCodeId" width="100%" required="true" class="input" maxLength="2" />
+              <WizardStep title="{i18n>step3Title}" validated="true" id="step-taxAttr" complete="completeTaxAttr">
+                <form:SimpleForm editable="true" id="form-step3">
+                  <html:div class="form-row">
+                    <l:HorizontalLayout id="field-TAXCODE" class="form-row">
+                      <Label text="{i18n>lblTaxCodeId}" labelFor="input-taxCodeId" />
+                      <Input id="input-taxCodeId" width="100%" class="input" maxLength="2" />
+                    </l:HorizontalLayout>
+
+                    <html:div id="field-TAXNAME" class="form-row">
+                      <Label text="Tax Name" labelFor="input-taxName" />
+                      <Input id="input-taxName" width="100%" class="input" required="true" maxLength="2" />
+                    </html:div>
                   </html:div>
 
-                  <Label text="Tax Name" labelFor="input-taxName" />
-                  <Input id="input-taxName" width="100%" required="true" class="input" maxLength="2" />
+                  <html:div id="field-TAXJURISDICTION" class="form-row">
+                    <Label text="Tax Jurisdiction" labelFor="cbx-taxJur" />
+                    <ComboBox id="cbx-taxJur" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'key' }, length : '300' }">
+                      <core:ListItem key="{txjcd}" text="{txjcd}" additionalText="{txjcd_name}" />
+                    </ComboBox>
+                  </html:div>
 
-                  <Label text="Tax Jurisdiction" labelFor="input-taxJur" />
-                  <Input id="input-taxJur" width="100%" required="true" class="input" maxLength="2" />
+                  <html:div id="field-CHECKID" class="form-row">
+                    <Label text="{i18n>chkCheckId}" labelFor="chk-checkId" />
+                    <CheckBox id="chk-checkId"/>
+                  </html:div>
 
-                  <CheckBox id="chk-checkId" text="{i18n>chkCheckId}" />
+                  <html:div id="field-TAXRETURNCOUNTRY" class="form-row">
+                    <Label text="{i18n>lblReportCountry}" labelFor="cbx-reportCountry" />
+                    <ComboBox id="cbx-reportCountry" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '350' }">
+                      <core:ListItem key="{land1}" text="{land1}" additionalText="{landx}" />
+                    </ComboBox>
+                  </html:div>
 
-                  <Label text="{i18n>lblReportCountry}" labelFor="cbx-reportCountry" />
-                  <ComboBox required="true" id="cbx-reportCountry" change="" showSecondaryValues="true" items="{ path: '/CountriesData', sorter: { path: 'key' }, length : '300' }">
-                    <core:ListItem key="{key}" text="{key}" additionalText="{name}" />
-                  </ComboBox>
+                  <html:div id="field-EUTAXCLASSIFICATION" class="form-row">
+                    <Label text="{i18n>lblEuCode}" labelFor="cbx-euCode" />
+                    <ComboBox id="cbx-euCode" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'egrkz' }, length : '300' }">
+                      <core:ListItem key="{egrkz}" text="{egrkz}" additionalText="{egrkz_desc}" />
+                    </ComboBox>
+                  </html:div>
 
-                  <Label text="{i18n>lblEuCode}" labelFor="cbx-euCode" />
-                  <ComboBox required="true" id="cbx-euCode" change="" showSecondaryValues="true" items="{ path: '/EUCodedata', sorter: { path: 'description' }, length : '300' }">
-                    <core:ListItem key="{code}" text="{code}" additionalText="{description}" />
-                  </ComboBox>
+                  <html:div id="field-TARGETTAXCODE" class="form-row">
+                    <Label text="{i18n>lblTargetTaxCode}" labelFor="cbx-targetTaxCode" />
+                    <ComboBox id="cbx-targetTaxCode" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'code' }, length : '300' }">
+                      <core:ListItem key="{code}" text="{code}" additionalText="{description}" />
+                    </ComboBox>
+                  </html:div>
 
-                  <Label text="{i18n>lblTargetTaxCode}" labelFor="cbx-targetTaxCode" />
-                  <ComboBox required="true" id="cbx-targetTaxCode" change="" showSecondaryValues="true" items="{ path: '/TargetTaxCodeData', sorter: { path: 'code' }, length : '300' }">
-                    <core:ListItem key="{code}" text="{code}" additionalText="{description}" />
-                  </ComboBox>
-
-                  <Label text="{i18n>lblTolerance}" labelFor="input-tolerance" />
-                  <Input id="input-tolerance" width="100%" required="true" class="input sMedium" liveChange="validateNumericInput" />
-
+                  <html:div id="field-TAXTOLERANCEPERCENT" class="form-row">
+                    <Label text="{i18n>lblTolerance}" labelFor="input-tolerance" />
+                    <Input id="input-tolerance" width="100%" class="input sMedium" liveChange="validateNumericInput" />
+                  </html:div>
                 </form:SimpleForm>
                 <Button text="Back" press="backToStep2" />
               </WizardStep>
               <WizardStep title="{i18n>step4Title}" validated="true">
-                <table:Table id="table-revTaxRates" rows="{/TaxRatesData}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
+                <table:Table id="table-revTaxRates" rows="{/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
                   <table:columns>
                     <table:Column width="10%">
                       <Label text="{i18n>lblConditionType}" />
@@ -109,6 +130,7 @@
                     </table:Column>
                   </table:columns>
                 </table:Table>
+                <Button text="Back" press="backToStep3" />
               </WizardStep>
             </Wizard>
           </content>

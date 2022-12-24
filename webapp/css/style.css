@@ -2,3 +2,51 @@
   justify-content: center;
   align-items: center;
 }
+
+.sapUiRFLPaddingClass {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sapUiRFLContainer {
+  width: 100% !important;
+  margin-left: 12px;
+}
+
+.sapUiRFLRow {
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sapMLabel {
+  overflow: visible;
+  margin-right: 1rem;
+  width: 170px;
+  text-align: right !important;
+}
+
+#container-taco---app--cbx-taxType {
+  width: 110px;
+}
+#container-taco---app--input-taxName {
+  width: 120px !important;
+}
+#container-taco---app--cbx-countryKey, #container-taco---app--cbx-reportCountry, #container-taco---app--input-taxCodeId {
+  width: 80px !important;
+}
+#container-taco---app--cbx-taxJur {
+  width: 90px !important;
+}
+#container-taco---app--cbx-euCode {
+  width: 60px !important;
+}
+#container-taco---app--input-tolerance {
+  width: 110px !important;
+}
+
+.form-row {
+  display: flex !important;
+  align-items: center;
+  flex-direction: row;
+}
