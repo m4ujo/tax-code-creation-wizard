@@ -26,13 +26,19 @@
   text-align: right !important;
 }
 
+tr > td > div > div > span.sapMLabel {
+  width: inherit !important;
+}
+
 #container-taco---app--cbx-taxType {
   width: 110px;
 }
 #container-taco---app--input-taxName {
-  width: 120px !important;
+  width: 140px !important;
 }
-#container-taco---app--cbx-countryKey, #container-taco---app--cbx-reportCountry, #container-taco---app--input-taxCodeId {
+#container-taco---app--cbx-countryKey,
+#container-taco---app--cbx-reportCountry,
+#container-taco---app--input-taxCodeId {
   width: 80px !important;
 }
 #container-taco---app--cbx-taxJur {
@@ -43,6 +49,23 @@
 }
 #container-taco---app--input-tolerance {
   width: 110px !important;
+}
+#container-taco---app--cbx-targetTaxCode {
+  width: 60px !important;
+}
+
+#container-taco---app--table-revTaxRates-sapUiTableCnt {
+  border: 0.0625rem solid #e5e5e5 !important;
+}
+
+#container-taco---app--table-revTaxRates-tableCCnt {
+  border: 0.0625rem solid #e5e5e5 !important;
+}
+
+#__label11 {
+  margin-right: 0 !important;
+  margin-left: 1rem !important;
+  text-align: left !important;
 }
 
 .form-row {

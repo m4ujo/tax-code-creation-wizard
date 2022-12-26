@@ -39,98 +39,106 @@
                     </ComboBox>
                   </html:div>
                 </form:SimpleForm>
-                <Button text="Back" press="backToStep1" />
+                <Button text="Back" press="backToStep1" id="button-backToStep1" />
               </WizardStep>
-              <WizardStep title="{i18n>step3Title}" validated="true" id="step-taxAttr" complete="completeTaxAttr">
+              <WizardStep title="{i18n>step3Title}" validated="false" id="step-taxAttr" complete="completeTaxAttr">
                 <form:SimpleForm editable="true" id="form-step3">
                   <html:div class="form-row">
                     <l:HorizontalLayout id="field-TAXCODE" class="form-row">
                       <Label text="{i18n>lblTaxCodeId}" labelFor="input-taxCodeId" />
-                      <Input id="input-taxCodeId" width="100%" class="input" maxLength="2" />
+                      <Input id="input-taxCodeId" width="100%" class="input" maxLength="2" liveChange="validateTaxAttr" />
                     </l:HorizontalLayout>
 
-                    <html:div id="field-TAXNAME" class="form-row">
+                    <l:HorizontalLayout id="field-TAXNAME" class="form-row">
                       <Label text="Tax Name" labelFor="input-taxName" />
-                      <Input id="input-taxName" width="100%" class="input" required="true" maxLength="2" />
-                    </html:div>
+                      <Input id="input-taxName" width="100%" class="input" required="true" liveChange="validateTaxAttr" />
+                    </l:HorizontalLayout>
                   </html:div>
 
-                  <html:div id="field-TAXJURISDICTION" class="form-row">
+                  <l:HorizontalLayout id="field-TAXJURISDICTION" class="form-row">
                     <Label text="Tax Jurisdiction" labelFor="cbx-taxJur" />
                     <ComboBox id="cbx-taxJur" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'key' }, length : '300' }">
                       <core:ListItem key="{txjcd}" text="{txjcd}" additionalText="{txjcd_name}" />
                     </ComboBox>
-                  </html:div>
+                  </l:HorizontalLayout>
 
-                  <html:div id="field-CHECKID" class="form-row">
+                  <l:HorizontalLayout id="field-CHECKID" class="form-row">
                     <Label text="{i18n>chkCheckId}" labelFor="chk-checkId" />
                     <CheckBox id="chk-checkId"/>
-                  </html:div>
+                  </l:HorizontalLayout>
 
-                  <html:div id="field-TAXRETURNCOUNTRY" class="form-row">
+                  <l:HorizontalLayout id="field-TAXRETURNCOUNTRY" class="form-row">
                     <Label text="{i18n>lblReportCountry}" labelFor="cbx-reportCountry" />
                     <ComboBox id="cbx-reportCountry" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '350' }">
                       <core:ListItem key="{land1}" text="{land1}" additionalText="{landx}" />
                     </ComboBox>
-                  </html:div>
+                  </l:HorizontalLayout>
 
-                  <html:div id="field-EUTAXCLASSIFICATION" class="form-row">
+                  <l:HorizontalLayout id="field-EUTAXCLASSIFICATION" class="form-row">
                     <Label text="{i18n>lblEuCode}" labelFor="cbx-euCode" />
                     <ComboBox id="cbx-euCode" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'egrkz' }, length : '300' }">
                       <core:ListItem key="{egrkz}" text="{egrkz}" additionalText="{egrkz_desc}" />
                     </ComboBox>
-                  </html:div>
+                  </l:HorizontalLayout>
 
-                  <html:div id="field-TARGETTAXCODE" class="form-row">
+                  <l:HorizontalLayout id="field-TARGETTAXCODE" class="form-row">
                     <Label text="{i18n>lblTargetTaxCode}" labelFor="cbx-targetTaxCode" />
-                    <ComboBox id="cbx-targetTaxCode" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'code' }, length : '300' }">
-                      <core:ListItem key="{code}" text="{code}" additionalText="{description}" />
+                    <ComboBox id="cbx-targetTaxCode" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'mwskz' }, length : '300' }">
+                      <core:ListItem key="{mwskz}" text="{mwskz}" additionalText="{mwskz_name}" />
                     </ComboBox>
-                  </html:div>
+                  </l:HorizontalLayout>
 
-                  <html:div id="field-TAXTOLERANCEPERCENT" class="form-row">
+                  <l:HorizontalLayout id="field-TAXTOLERANCEPERCENT" class="form-row">
                     <Label text="{i18n>lblTolerance}" labelFor="input-tolerance" />
-                    <Input id="input-tolerance" width="100%" class="input sMedium" liveChange="validateNumericInput" />
-                  </html:div>
+                    <StepInput id="input-tolerance" value="0.00" displayValuePrecision="2" min="0" max="100" step="0.5" change="validateTaxAttr" />
+                    <Label text="%"/>
+                  </l:HorizontalLayout>
+
                 </form:SimpleForm>
-                <Button text="Back" press="backToStep2" />
+                <Button text="Back" press="backToStep2" id="button-backToStep2" />
               </WizardStep>
-              <WizardStep title="{i18n>step4Title}" validated="true">
+              <WizardStep title="{i18n>step4Title}" validated="false">
                 <table:Table id="table-revTaxRates" rows="{/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
                   <table:columns>
                     <table:Column width="10%">
                       <Label text="{i18n>lblConditionType}" />
                       <table:template>
-                        <Text text="{ConditionType}" />
+                        <Text text="{kschl}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="20%">
                       <Label text="{i18n>lblDescription}" />
                       <table:template>
-                        <Text text="{Description}" />
+                        <Text text="{vtext}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblTaxProcedure}" />
+                      <table:template>
+                        <Text text="{kalsm}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblPosition}" />
+                      <table:template>
+                        <Text text="{stunr}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="10%">
                       <Label text="{i18n>lblAccountKey}" />
                       <table:template>
-                        <Label text="{AccountKey}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblGLAccount}" />
-                      <table:template>
-                        <ObjectStatus text="{GLAccount}" />
+                        <Text text="{kvsl1}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="10%">
                       <Label text="{i18n>lblRate}" />
                       <table:template>
-                        <Input value="{Rate}" liveChange="validateNumericInput" />
+                          <StepInput value="0.00" displayValuePrecision="2" min="-100" max="100" step="0.5" />
                       </table:template>
                     </table:Column>
                   </table:columns>
                 </table:Table>
-                <Button text="Back" press="backToStep3" />
+                <Button text="Back" press="backToStep3" id="button-backToStep3" class="sapUiSmallMarginTop" />
               </WizardStep>
             </Wizard>
           </content>
