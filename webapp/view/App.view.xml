@@ -12,7 +12,7 @@
       <pages>
         <Page id="taxCodeWizardPage" title="{i18n>tacoWizardTitle}">
           <content>
-            <Wizard id="tacoWizard" width="100%" complete="onComplete" finishButtonText="Review">
+            <Wizard id="tacoWizard" width="100%" complete="onComplete" finishButtonText="Submit">
               <WizardStep title="{i18n>step1Title}" validated="false" id="step-taxProperties" complete="completeTaxProperties">
                 <form:SimpleForm editable="true" class="flex">
                   <html:div class="form-row">
@@ -50,13 +50,13 @@
                     </l:HorizontalLayout>
 
                     <l:HorizontalLayout id="field-TAXNAME" class="form-row">
-                      <Label text="Tax Name" labelFor="input-taxName" />
+                      <Label text="{i18n>lblTaxName}" labelFor="input-taxName" />
                       <Input id="input-taxName" width="100%" class="input" required="true" liveChange="validateTaxAttr" />
                     </l:HorizontalLayout>
                   </html:div>
 
                   <l:HorizontalLayout id="field-TAXJURISDICTION" class="form-row">
-                    <Label text="Tax Jurisdiction" labelFor="cbx-taxJur" />
+                    <Label text="{i18n>lblTaxJur}" labelFor="cbx-taxJur" />
                     <ComboBox id="cbx-taxJur" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'key' }, length : '300' }">
                       <core:ListItem key="{txjcd}" text="{txjcd}" additionalText="{txjcd_name}" />
                     </ComboBox>
@@ -69,7 +69,7 @@
 
                   <l:HorizontalLayout id="field-TAXRETURNCOUNTRY" class="form-row">
                     <Label text="{i18n>lblReportCountry}" labelFor="cbx-reportCountry" />
-                    <ComboBox id="cbx-reportCountry" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '350' }">
+                    <ComboBox id="cbx-reportCountry" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '450' }">
                       <core:ListItem key="{land1}" text="{land1}" additionalText="{landx}" />
                     </ComboBox>
                   </l:HorizontalLayout>
@@ -97,7 +97,7 @@
                 </form:SimpleForm>
                 <Button text="Back" press="backToStep2" id="button-backToStep2" />
               </WizardStep>
-              <WizardStep title="{i18n>step4Title}" validated="false">
+              <WizardStep title="{i18n>step4Title}" validated="true" complete="completeConditionTypes">
                 <table:Table id="table-revTaxRates" rows="{/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
                   <table:columns>
                     <table:Column width="10%">
@@ -106,7 +106,7 @@
                         <Text text="{kschl}" />
                       </table:template>
                     </table:Column>
-                    <table:Column width="20%">
+                    <table:Column width="25%">
                       <Label text="{i18n>lblDescription}" />
                       <table:template>
                         <Text text="{vtext}" />
@@ -130,22 +130,112 @@
                         <Text text="{kvsl1}" />
                       </table:template>
                     </table:Column>
-                    <table:Column width="10%">
+                    <table:Column width="20%">
                       <Label text="{i18n>lblRate}" />
                       <table:template>
-                          <StepInput value="0.00" displayValuePrecision="2" min="-100" max="100" step="0.5" />
+                        <StepInput value="0.00" displayValuePrecision="2" min="-100" max="100" step="0.5" />
                       </table:template>
                     </table:Column>
                   </table:columns>
                 </table:Table>
                 <Button text="Back" press="backToStep3" id="button-backToStep3" class="sapUiSmallMarginTop" />
               </WizardStep>
+              <WizardStep id="step-reviewAll" title="{i18n>step5Title}">
+                <Panel headerText="Initial tax properties">
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblCountryKey}" />
+                    <Text text="{/header/countryKey}" />
+                  </html:div>
+                  <html:br></html:br>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblTaxType}" />
+                    <Text text="{/header/taxType}" />
+                  </html:div>
+                </Panel>
+                <Panel headerText="VAT tax scenario">
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblVatScenario}" />
+                    <Text text="{/header/vatTaxScenario}" />
+                  </html:div>
+                </Panel>
+                <Panel headerText="Tax specific attributes">
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblTaxCodeId}" />
+                    <Text text="{/header/taxCodeId}" />
+                  </html:div>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblTaxName}" />
+                    <Text text="{/header/taxName}" />
+                  </html:div>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblTaxJur}" />
+                    <Text text="{/header/taxJur}" />
+                  </html:div>
+                  <html:div class="form-row">
+                    <Label text="{i18n>chkCheckId}" />
+                    <Text text="{/header/checkId}" />
+                  </html:div>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblReportCountry}" />
+                    <Text text="{/header/reportCountry}" />
+                  </html:div>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblEuCode}" />
+                    <Text text="{/header/euCode}" />
+                  </html:div>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblTargetTaxCode}" />
+                    <Text text="{/header/targetTaxCode}" />
+                  </html:div>
+                  <html:div class="form-row">
+                    <Label text="{i18n>lblTolerance}" />
+                    <Text text="{/header/tolerance}" />
+                  </html:div>
+                </Panel>
+                <Panel headerText="Condition types">
+                <table:Table rows="{/schema/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
+                  <table:columns>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblConditionType}" />
+                      <table:template>
+                        <Text text="{conditionType}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="25%">
+                      <Label text="{i18n>lblDescription}" />
+                      <table:template>
+                        <Text text="{description}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblTaxProcedure}" />
+                      <table:template>
+                        <Text text="{taxProcedure}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblPosition}" />
+                      <table:template>
+                        <Text text="{position}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="10%">
+                      <Label text="{i18n>lblAccountKey}" />
+                      <table:template>
+                        <Text text="{accountKey}" />
+                      </table:template>
+                    </table:Column>
+                    <table:Column width="20%">
+                      <Label text="{i18n>lblRate}" />
+                      <table:template>
+                        <Text text="{rate}" />
+                      </table:template>
+                    </table:Column>
+                  </table:columns>
+                </table:Table>
+                </Panel>
+              </WizardStep>
             </Wizard>
-          </content>
-        </Page>
-        <Page id="taxCodeReviewPage" title="{i18n>tacoReviewTitle}">
-          <content>
-            <Text text="Review" />
           </content>
         </Page>
       </pages>

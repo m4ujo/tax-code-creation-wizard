@@ -34,7 +34,7 @@ tr > td > div > div > span.sapMLabel {
   width: 110px;
 }
 #container-taco---app--input-taxName {
-  width: 140px !important;
+  width: 240px !important;
 }
 #container-taco---app--cbx-countryKey,
 #container-taco---app--cbx-reportCountry,
@@ -48,7 +48,7 @@ tr > td > div > div > span.sapMLabel {
   width: 60px !important;
 }
 #container-taco---app--input-tolerance {
-  width: 110px !important;
+  width: 130px !important;
 }
 #container-taco---app--cbx-targetTaxCode {
   width: 60px !important;
