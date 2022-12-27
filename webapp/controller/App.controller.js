@@ -343,9 +343,10 @@ sap.ui.define(
         data = []
       },
 
-      // Review Condition Types - Step 4
+      // Set Condition Types - Step 4
       completeConditionTypes: function () {
         this.byId('button-backToStep2').setVisible(false)
+        this.byId('button-backToStep3').setVisible(false)
 
         const headerData = {
           countryKey: this.oCbxCountryKey.getValue(),
@@ -379,9 +380,11 @@ sap.ui.define(
           schema: schemaData
         }
 
-        this.byId('step-reviewAll').setModel(new JSONModel(this.finalData))
+        this.oTableRevTaxRates.getRows().forEach((row) => {
+          row.getCells()[5].setEnabled(false)
+        })
 
-        console.log(this.byId('step-reviewAll'))
+        this.byId('step-reviewAll').setModel(new JSONModel(this.finalData))
       },
       backToStep3: function () {
         this.oWizard.previousStep()
@@ -394,6 +397,15 @@ sap.ui.define(
         this.oCbxTargetTaxCode.setEnabled(true)
         this.oIptTolerance.setEnabled(true)
         data = []
+      },
+
+      // Review
+      backToStep4: function () {
+        this.oWizard.previousStep()
+        this.byId('button-backToStep3').setVisible(true)
+        this.oTableRevTaxRates.getRows().forEach((row) => {
+          row.getCells()[5].setEnabled(true)
+        })
       },
 
       onComplete: function () {

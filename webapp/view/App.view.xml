@@ -234,6 +234,7 @@
                   </table:columns>
                 </table:Table>
                 </Panel>
+                <Button text="Back" press="backToStep4" id="button-backToStep4" class="sapUiSmallMarginTop" />
               </WizardStep>
             </Wizard>
           </content>
