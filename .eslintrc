@@ -1,8 +1,8 @@
-{
-  "extends": ["standard", "standard-jsx"],
-  "globals": {
-    "sap": true,
-		"jQuery": true,
-    "$": true
-  }
-}
+// {
+//   "extends": ["standard", "standard-jsx"],
+//   "globals": {
+//     "sap": true,
+// 		"jQuery": true,
+//     "$": true
+//   }
+// }

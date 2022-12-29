@@ -342,20 +342,21 @@ sap.ui.define(
         this.byId('button-backToStep2').setVisible(false)
         this.byId('button-backToStep3').setVisible(false)
 
-        const headerData = {
+        let headerData = {
           land1: this.oCbxCountryKey.getValue(),
+          kalsm: '',
           mwart: this.oCbxTaxType.getSelectedKey(),
-          scen: this.oCbxVatScenarios.getValue(),
           mwskz: this.oIptTaxCodeId.getValue(),
           mwskz_name: this.oIptTaxName.getValue(),
           txjcd: this.oCbxTaxJur.getValue(),
+          scen: this.oCbxVatScenarios.getValue(),
           pruef: this.oChkCheckId.getSelected(),
-          lstml: this.oCbxReportCountry.getValue(),
-          egrkz: this.oCbxEuCode.getValue(),
           zmwsk: this.oCbxTargetTaxCode.getValue(),
+          egrkz: this.oCbxEuCode.getValue(),
+          lstml: this.oCbxReportCountry.getValue(),
           tolerance: this.oIptTolerance.getValue()
         }
-        const schemaData = []
+        let schemaData = []
 
         this.oTableRevTaxRates.getRows().forEach((row) => {
           const schemaTemp = {
@@ -367,7 +368,9 @@ sap.ui.define(
             kbetr: row.getCells()[5].getValue()
           }
 
+          
           if (schemaTemp.kschl) {
+            headerData.kalsm = schemaTemp.kalsm
             schemaData.push(schemaTemp)
           }
         })
@@ -409,16 +412,18 @@ sap.ui.define(
 
       onComplete: function () {
         console.log('Make POST Request')
-        // fetch('https://usalspgsa660.na.pg.com:8443/pg_itx?sap-client=400&code=TEST_POST_METHOD', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json'
-        //   },
-        //   body: JSON.stringify(this.finalData)
-        //   // body: 'sadas'
-        // })
-        //   .then(response => response.json())
-        //   .then(json => console.log(json))
+
+        console.log(this.finalData)
+
+        fetch('https://usalspgsa660.na.pg.com:8443/pg_itx?sap-client=400&code=TEST_POST_METHOD', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: JSON.stringify(this.finalData)
+        })
+          .then(response => response.text())
+          .then(text => console.log(text))
       }
     })
   }
