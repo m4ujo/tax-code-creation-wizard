@@ -148,12 +148,10 @@ sap.ui.define(
 
       // Tax Properties - Step 1
       validateTaxProperties: function () {
-        const sCountryKey = this.oCbxCountryKey
-          .getValue()
-          .replace(REGEX_SPACES, '')
-        const sTaxType = this.oCbxTaxType.getSelectedKey()
-
         this.oWizard.invalidateStep(this.byId('step-taxProperties'))
+
+        const sCountryKey = this.oCbxCountryKey.getValue().replace(REGEX_SPACES, '')
+        const sTaxType = this.oCbxTaxType.getSelectedKey()
 
         if (sCountryKey !== '' && sTaxType !== '') {
           url = this.buildUrl(
@@ -167,9 +165,7 @@ sap.ui.define(
         setTimeout(() => {
           if (data.length === 0) {
             this.oWizard.invalidateStep(this.byId('step-taxProperties'))
-            MessageBox.error(
-              'No scenarios were found, for the entered values.'
-            )
+            MessageBox.error('No scenarios were found, for the entered values.')
           } else if (sCountryKey === '' || sTaxType === '') {
             this.oWizard.invalidateStep(this.byId('step-taxProperties'))
           } else if (sTaxType !== 'A' && sTaxType !== 'V') {
@@ -191,9 +187,7 @@ sap.ui.define(
       // Vat Scenario - Step 2
       validateVatScenario: function () {
         this.oWizard.invalidateStep(this.byId('step-vatScenarios'))
-        const sVatScenario = this.oCbxVatScenarios
-          .getValue()
-          .replace(REGEX_SPACES, '')
+        const sVatScenario = this.oCbxVatScenarios.getValue().replace(REGEX_SPACES, '')
 
         if (sVatScenario !== '') {
           url = this.buildUrl(
@@ -207,9 +201,7 @@ sap.ui.define(
 
         setTimeout(() => {
           if (data.length === 0) {
-            MessageBox.error(
-              'Fieldstatus data not found, for the entered scenario.'
-            )
+            MessageBox.error('Fieldstatus data not found, for the entered scenario.')
             this.oWizard.invalidateStep(this.byId('step-vatScenarios'))
           } else {
             this.oWizard.validateStep(this.byId('step-vatScenarios'))
@@ -217,6 +209,7 @@ sap.ui.define(
         }, 1500)
       },
       completeVatScenarios: function () {
+        this.oCbxVatScenarios.setEnabled(false)
         data.forEach((x) => {
           const field = this.byId(`field-${x.fieldname}`)
           if (field) {
@@ -249,7 +242,7 @@ sap.ui.define(
                 url = this.buildUrl(URL_CODES[6])
                 this.getDataJSON(url, this.oCbxEuCode)
               }
-              if (x.fieldname === 'EUTAXCLASSIFICATION') {
+              if (x.fieldname === 'TARGETTAXCODE') {
                 url = this.buildUrl(URL_CODES[7], {
                   type: 'land1',
                   value: this.oCbxCountryKey.getValue()
@@ -260,11 +253,9 @@ sap.ui.define(
           }
         })
 
-        this.oCbxVatScenarios.setEnabled(false)
-
         this.oIptTaxCodeId.setValue('')
         this.oIptTaxName.setValue('')
-        this.oIptTolerance.setValue(0)
+        this.oIptTolerance.setValue(0.00)
 
         this.byId('button-backToStep1').setVisible(false)
       },
@@ -283,9 +274,11 @@ sap.ui.define(
 
       // Tax Attr - Step 3
       validateTaxAttr: function () {
+        const taxCodeId = this.oIptTaxCodeId.getValue().replace(REGEX_SPACES, '')
+        const taxName = this.oIptTaxName.getValue().replace(REGEX_SPACES, '')
         this.oWizard.invalidateStep(this.byId('step-taxAttr'))
 
-        if (this.oIptTaxCodeId.getValue().length === 2) {
+        if (taxCodeId.length === 2) {
           data = []
           url = this.buildUrl(
             URL_CODES[9],
@@ -297,11 +290,11 @@ sap.ui.define(
 
         setTimeout(() => {
           if (
-            this.oIptTaxCodeId.getValue() === '' ||
-            this.oIptTaxName.getValue() === '' ||
+            taxCodeId === '' ||
+            taxName === '' ||
             this.oIptTolerance.getValue() < 0 ||
             this.oIptTolerance.getValue() > 100 ||
-            this.oIptTaxCodeId.getValue().length !== 2
+            taxCodeId.length !== 2
           ) {
             this.oWizard.invalidateStep(this.byId('step-taxAttr'))
           } else {
@@ -325,6 +318,7 @@ sap.ui.define(
           { type: 'scen', value: this.oCbxVatScenarios.getValue() }
         )
         this.getDataJSON(url, this.oTableRevTaxRates)
+
         this.byId('button-backToStep1').setVisible(false)
         this.byId('button-backToStep2').setVisible(false)
 
@@ -349,30 +343,33 @@ sap.ui.define(
         this.byId('button-backToStep3').setVisible(false)
 
         const headerData = {
-          countryKey: this.oCbxCountryKey.getValue(),
-          taxType: this.oCbxTaxType.getSelectedKey(),
-          vatTaxScenario: this.oCbxVatScenarios.getValue(),
-          taxCodeId: this.oIptTaxCodeId.getValue(),
-          taxName: this.oIptTaxName.getValue(),
-          taxJur: this.oCbxTaxJur.getValue(),
-          checkId: this.oChkCheckId.getSelected(),
-          reportCountry: this.oCbxReportCountry.getValue(),
-          euCode: this.oCbxEuCode.getValue(),
-          targetTaxCode: this.oCbxTargetTaxCode.getValue(),
+          land1: this.oCbxCountryKey.getValue(),
+          mwart: this.oCbxTaxType.getSelectedKey(),
+          scen: this.oCbxVatScenarios.getValue(),
+          mwskz: this.oIptTaxCodeId.getValue(),
+          mwskz_name: this.oIptTaxName.getValue(),
+          txjcd: this.oCbxTaxJur.getValue(),
+          pruef: this.oChkCheckId.getSelected(),
+          lstml: this.oCbxReportCountry.getValue(),
+          egrkz: this.oCbxEuCode.getValue(),
+          zmwsk: this.oCbxTargetTaxCode.getValue(),
           tolerance: this.oIptTolerance.getValue()
         }
         const schemaData = []
 
         this.oTableRevTaxRates.getRows().forEach((row) => {
           const schemaTemp = {
-            conditionType: row.getCells()[0].getText(),
-            description: row.getCells()[1].getText(),
-            taxProcedure: row.getCells()[2].getText(),
-            position: row.getCells()[3].getText(),
-            accountKey: row.getCells()[4].getText(),
-            rate: row.getCells()[5].getValue()
+            kschl: row.getCells()[0].getText(),
+            vtext: row.getCells()[1].getText(),
+            kalsm: row.getCells()[2].getText(),
+            stunr: row.getCells()[3].getText(),
+            kvsl1: row.getCells()[4].getText(),
+            kbetr: row.getCells()[5].getValue()
           }
-          schemaData.push(schemaTemp)
+
+          if (schemaTemp.kschl) {
+            schemaData.push(schemaTemp)
+          }
         })
 
         this.finalData = {
@@ -383,6 +380,8 @@ sap.ui.define(
         this.oTableRevTaxRates.getRows().forEach((row) => {
           row.getCells()[5].setEnabled(false)
         })
+
+        this.byId('tableConditionTypes').mProperties.visibleRowCount = this.finalData.schema.length
 
         this.byId('step-reviewAll').setModel(new JSONModel(this.finalData))
       },
@@ -409,8 +408,17 @@ sap.ui.define(
       },
 
       onComplete: function () {
-        console.log('Terminado')
-        this.oNavContainer.to(this.byId('taxCodeReviewPage'))
+        console.log('Make POST Request')
+        // fetch('https://usalspgsa660.na.pg.com:8443/pg_itx?sap-client=400&code=TEST_POST_METHOD', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify(this.finalData)
+        //   // body: 'sadas'
+        // })
+        //   .then(response => response.json())
+        //   .then(json => console.log(json))
       }
     })
   }

@@ -144,48 +144,47 @@
                 <Panel headerText="Initial tax properties">
                   <html:div class="form-row">
                     <Label text="{i18n>lblCountryKey}" />
-                    <Text text="{/header/countryKey}" />
+                    <Text text="{/header/land1}" />
                   </html:div>
-                  <html:br></html:br>
                   <html:div class="form-row">
                     <Label text="{i18n>lblTaxType}" />
-                    <Text text="{/header/taxType}" />
+                    <Text text="{/header/mwart}" />
                   </html:div>
                 </Panel>
                 <Panel headerText="VAT tax scenario">
                   <html:div class="form-row">
                     <Label text="{i18n>lblVatScenario}" />
-                    <Text text="{/header/vatTaxScenario}" />
+                    <Text text="{/header/scen}" />
                   </html:div>
                 </Panel>
                 <Panel headerText="Tax specific attributes">
                   <html:div class="form-row">
                     <Label text="{i18n>lblTaxCodeId}" />
-                    <Text text="{/header/taxCodeId}" />
+                    <Text text="{/header/mwskz}" />
                   </html:div>
                   <html:div class="form-row">
                     <Label text="{i18n>lblTaxName}" />
-                    <Text text="{/header/taxName}" />
+                    <Text text="{/header/mwskz_name}" />
                   </html:div>
                   <html:div class="form-row">
                     <Label text="{i18n>lblTaxJur}" />
-                    <Text text="{/header/taxJur}" />
+                    <Text text="{/header/txjcd}" />
                   </html:div>
                   <html:div class="form-row">
                     <Label text="{i18n>chkCheckId}" />
-                    <Text text="{/header/checkId}" />
+                    <Text text="{/header/pruef}" />
                   </html:div>
                   <html:div class="form-row">
                     <Label text="{i18n>lblReportCountry}" />
-                    <Text text="{/header/reportCountry}" />
+                    <Text text="{/header/lstml}" />
                   </html:div>
                   <html:div class="form-row">
                     <Label text="{i18n>lblEuCode}" />
-                    <Text text="{/header/euCode}" />
+                    <Text text="{/header/egrkz}" />
                   </html:div>
                   <html:div class="form-row">
                     <Label text="{i18n>lblTargetTaxCode}" />
-                    <Text text="{/header/targetTaxCode}" />
+                    <Text text="{/header/zmwsk}" />
                   </html:div>
                   <html:div class="form-row">
                     <Label text="{i18n>lblTolerance}" />
@@ -193,42 +192,42 @@
                   </html:div>
                 </Panel>
                 <Panel headerText="Condition types">
-                <table:Table rows="{/schema/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
+                <table:Table rows="{/schema/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste" id="tableConditionTypes">
                   <table:columns>
                     <table:Column width="10%">
                       <Label text="{i18n>lblConditionType}" />
                       <table:template>
-                        <Text text="{conditionType}" />
+                        <Text text="{kschl}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="25%">
                       <Label text="{i18n>lblDescription}" />
                       <table:template>
-                        <Text text="{description}" />
+                        <Text text="{vtext}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="10%">
                       <Label text="{i18n>lblTaxProcedure}" />
                       <table:template>
-                        <Text text="{taxProcedure}" />
+                        <Text text="{kalsm}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="10%">
                       <Label text="{i18n>lblPosition}" />
                       <table:template>
-                        <Text text="{position}" />
+                        <Text text="{stunr}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="10%">
                       <Label text="{i18n>lblAccountKey}" />
                       <table:template>
-                        <Text text="{accountKey}" />
+                        <Text text="{kvsl1}" />
                       </table:template>
                     </table:Column>
                     <table:Column width="20%">
                       <Label text="{i18n>lblRate}" />
                       <table:template>
-                        <Text text="{rate}" />
+                        <Text text="{kbetr}" />
                       </table:template>
                     </table:Column>
                   </table:columns>
