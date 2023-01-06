@@ -1,0 +1,19 @@
+<core:FragmentDefinition xmlns="sap.m"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc">
+  <WizardStep id="step-condition-types" title="{i18n>step4Title}" validated="true" activate="onActivateConditionTypes" complete="onCompleteConditionTypes">
+    <html:div id="container-table-default">
+      <core:Fragment fragmentName="taco.view.fragment.tables.TableDefault" type="XML"/>
+    </html:div>
+
+    <html:br />
+    <html:br />
+
+    <Panel id="container-table-deferred" headerText="Deferred Tax Receiver" visible="false">
+      <core:Fragment fragmentName="taco.view.fragment.tables.TableDeferred" type="XML"/>
+    </Panel>
+
+    <Button text="Back" press="onPressBackToStepTaxAttr" id="button-back-to-step3" class="sapUiSmallMarginTop" />
+  </WizardStep>
+</core:FragmentDefinition>

@@ -1,0 +1,44 @@
+<core:FragmentDefinition xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:table="sap.ui.table">
+  <table:Table id="table-deferred" rows="{/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
+    <table:columns>
+      <table:Column width="10%">
+        <Label text="{i18n>lblConditionType}" />
+        <table:template>
+          <Text text="{kschl}" />
+        </table:template>
+      </table:Column>
+      <table:Column width="25%">
+        <Label text="{i18n>lblDescription}" />
+        <table:template>
+          <Text text="{vtext}" />
+        </table:template>
+      </table:Column>
+      <table:Column width="10%">
+        <Label text="{i18n>lblTaxProcedure}" />
+        <table:template>
+          <Text text="{kalsm}" />
+        </table:template>
+      </table:Column>
+      <table:Column width="10%">
+        <Label text="{i18n>lblPosition}" />
+        <table:template>
+          <Text text="{stunr}" />
+        </table:template>
+      </table:Column>
+      <table:Column width="10%">
+        <Label text="{i18n>lblAccountKey}" />
+        <table:template>
+          <Text text="{kvsl1}" />
+        </table:template>
+      </table:Column>
+      <table:Column width="20%">
+        <Label text="{i18n>lblRate}" />
+        <table:template>
+          <StepInput value="0.00" displayValuePrecision="2" min="-100" max="100" step="0.5" />
+        </table:template>
+      </table:Column>
+    </table:columns>
+  </table:Table>
+</core:FragmentDefinition>

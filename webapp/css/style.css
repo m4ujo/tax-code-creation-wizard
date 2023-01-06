@@ -30,28 +30,34 @@ tr > td > div > div > span.sapMLabel {
   width: inherit !important;
 }
 
-#container-taco---app--cbx-taxType {
-  width: 110px;
+#container-taco---app--cbx-tax-type {
+  width: 120px;
 }
-#container-taco---app--input-taxName {
+#container-taco---app--input-tax-name {
   width: 240px !important;
 }
-#container-taco---app--cbx-countryKey,
-#container-taco---app--cbx-reportCountry,
-#container-taco---app--input-taxCodeId {
+#container-taco---app--cbx-country-key,
+#container-taco---app--cbx-report-country,
+#container-taco---app--input-tax-code-id {
   width: 80px !important;
 }
-#container-taco---app--cbx-taxJur {
+#container-taco---app--cbx-tax-jur {
   width: 90px !important;
 }
-#container-taco---app--cbx-euCode {
+#container-taco---app--cbx-eu-code {
   width: 60px !important;
 }
 #container-taco---app--input-tolerance {
   width: 130px !important;
 }
-#container-taco---app--cbx-targetTaxCode {
+#container-taco---app--cbx-target-tax-code {
   width: 60px !important;
+  text-transform: uppercase;
+}
+
+#container-taco---app--input-tax-code-id-inner,
+#container-taco---app--cbx-target-tax-code-inner {
+  text-transform: uppercase !important;
 }
 
 #__label11 {

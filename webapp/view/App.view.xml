@@ -1,240 +1,28 @@
 <mvc:View controllerName="taco.controller.App"
   xmlns="sap.m"
-  xmlns:html="http://www.w3.org/1999/xhtml"
-  xmlns:form="sap.ui.layout.form"
-  xmlns:table="sap.ui.table"
-  xmlns:mvc="sap.ui.core.mvc"
   xmlns:core="sap.ui.core"
-  xmlns:l="sap.ui.layout"
-  xmlns:u="sap.ui.unified" height="100%" displayBlock="true">
+  xmlns:mvc="sap.ui.core.mvc">
   <App width="100%">
-    <NavContainer id="wizardNavContainer" width="100%">
+    <NavContainer id="taco-navcontainer" width="100%">
       <pages>
-        <Page id="taxCodeWizardPage" title="{i18n>tacoWizardTitle}">
+        <Page id="taco-main-page" title="{i18n>tacoWizardTitle}">
           <content>
-            <Wizard id="tacoWizard" width="100%" complete="onComplete" finishButtonText="Submit">
-              <WizardStep title="{i18n>step1Title}" validated="false" id="step-taxProperties" complete="completeTaxProperties">
-                <form:SimpleForm editable="true" class="flex">
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblCountryKey}" labelFor="cbx-countryKey"/>
-                    <ComboBox required="true" id="cbx-countryKey" change="validateTaxProperties" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '300' }">
-                      <core:ListItem key="{land1}" text="{land1}" additionalText="{landx}" />
-                    </ComboBox>
-                  </html:div>
+            <!-- Wizard -->
+            <Wizard id="taco-wizard" width="100%" complete="onComplete" finishButtonText="Submit">
+              <!-- 1st step: Tax Properties -->
+              <core:Fragment fragmentName="taco.view.fragment.TaxProperties" type="XML" />
 
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblTaxType}" labelFor="cbx-taxType" />
-                    <ComboBox required="true" id="cbx-taxType" change="validateTaxProperties" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'mwart' } }">
-                      <core:ListItem key="{mwart}" text="{mwart_desc}" additionalText="{mwart}" />
-                    </ComboBox>
-                  </html:div>
-                </form:SimpleForm>
-              </WizardStep>
-              <WizardStep title="{i18n>step2Title}" validated="false" id="step-vatScenarios" complete="completeVatScenarios">
-                <form:SimpleForm editable="true">
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblVatScenario}" labelFor="cbx-vatScenarios" />
-                    <ComboBox required="true" id="cbx-vatScenarios" change="validateVatScenario" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'scen' } }">
-                      <core:ListItem text="{scen}" additionalText="{scen_desc}" />
-                    </ComboBox>
-                  </html:div>
-                </form:SimpleForm>
-                <Button text="Back" press="backToStep1" id="button-backToStep1" />
-              </WizardStep>
-              <WizardStep title="{i18n>step3Title}" validated="false" id="step-taxAttr" complete="completeTaxAttr">
-                <form:SimpleForm editable="true" id="form-step3">
-                  <html:div class="form-row">
-                    <l:HorizontalLayout id="field-TAXCODE" class="form-row">
-                      <Label text="{i18n>lblTaxCodeId}" labelFor="input-taxCodeId" />
-                      <Input id="input-taxCodeId" width="100%" class="input" maxLength="2" liveChange="validateTaxAttr" />
-                    </l:HorizontalLayout>
+              <!-- 2nd step: VAT Tax Scenario -->
+              <core:Fragment fragmentName="taco.view.fragment.VatScenarios" type="XML" />
 
-                    <l:HorizontalLayout id="field-TAXNAME" class="form-row">
-                      <Label text="{i18n>lblTaxName}" labelFor="input-taxName" />
-                      <Input id="input-taxName" width="100%" class="input" required="true" liveChange="validateTaxAttr" />
-                    </l:HorizontalLayout>
-                  </html:div>
+              <!-- 3rd step: Tax Attributes -->
+              <core:Fragment fragmentName="taco.view.fragment.TaxAttributes" type="XML" />
 
-                  <l:HorizontalLayout id="field-TAXJURISDICTION" class="form-row">
-                    <Label text="{i18n>lblTaxJur}" labelFor="cbx-taxJur" />
-                    <ComboBox id="cbx-taxJur" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'key' }, length : '300' }">
-                      <core:ListItem key="{txjcd}" text="{txjcd}" additionalText="{txjcd_name}" />
-                    </ComboBox>
-                  </l:HorizontalLayout>
+              <!-- 4th step: Table Condition Types -->
+              <core:Fragment fragmentName="taco.view.fragment.SetConditionTypes" type="XML" />
 
-                  <l:HorizontalLayout id="field-CHECKID" class="form-row">
-                    <Label text="{i18n>chkCheckId}" labelFor="chk-checkId" />
-                    <CheckBox id="chk-checkId"/>
-                  </l:HorizontalLayout>
-
-                  <l:HorizontalLayout id="field-TAXRETURNCOUNTRY" class="form-row">
-                    <Label text="{i18n>lblReportCountry}" labelFor="cbx-reportCountry" />
-                    <ComboBox id="cbx-reportCountry" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'land1' }, length : '450' }">
-                      <core:ListItem key="{land1}" text="{land1}" additionalText="{landx}" />
-                    </ComboBox>
-                  </l:HorizontalLayout>
-
-                  <l:HorizontalLayout id="field-EUTAXCLASSIFICATION" class="form-row">
-                    <Label text="{i18n>lblEuCode}" labelFor="cbx-euCode" />
-                    <ComboBox id="cbx-euCode" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'egrkz' }, length : '300' }">
-                      <core:ListItem key="{egrkz}" text="{egrkz}" additionalText="{egrkz_desc}" />
-                    </ComboBox>
-                  </l:HorizontalLayout>
-
-                  <l:HorizontalLayout id="field-TARGETTAXCODE" class="form-row">
-                    <Label text="{i18n>lblTargetTaxCode}" labelFor="cbx-targetTaxCode" />
-                    <ComboBox id="cbx-targetTaxCode" change="" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'mwskz' }, length : '300' }">
-                      <core:ListItem key="{mwskz}" text="{mwskz}" additionalText="{mwskz_name}" />
-                    </ComboBox>
-                  </l:HorizontalLayout>
-
-                  <l:HorizontalLayout id="field-TAXTOLERANCEPERCENT" class="form-row">
-                    <Label text="{i18n>lblTolerance}" labelFor="input-tolerance" />
-                    <StepInput id="input-tolerance" value="0.00" displayValuePrecision="2" min="0" max="100" step="0.5" change="validateTaxAttr" />
-                    <Label text="%"/>
-                  </l:HorizontalLayout>
-
-                </form:SimpleForm>
-                <Button text="Back" press="backToStep2" id="button-backToStep2" />
-              </WizardStep>
-              <WizardStep title="{i18n>step4Title}" validated="true" complete="completeConditionTypes">
-                <table:Table id="table-revTaxRates" rows="{/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste">
-                  <table:columns>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblConditionType}" />
-                      <table:template>
-                        <Text text="{kschl}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="25%">
-                      <Label text="{i18n>lblDescription}" />
-                      <table:template>
-                        <Text text="{vtext}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblTaxProcedure}" />
-                      <table:template>
-                        <Text text="{kalsm}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblPosition}" />
-                      <table:template>
-                        <Text text="{stunr}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblAccountKey}" />
-                      <table:template>
-                        <Text text="{kvsl1}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="20%">
-                      <Label text="{i18n>lblRate}" />
-                      <table:template>
-                        <StepInput value="0.00" displayValuePrecision="2" min="-100" max="100" step="0.5" />
-                      </table:template>
-                    </table:Column>
-                  </table:columns>
-                </table:Table>
-                <Button text="Back" press="backToStep3" id="button-backToStep3" class="sapUiSmallMarginTop" />
-              </WizardStep>
-              <WizardStep id="step-reviewAll" title="{i18n>step5Title}">
-                <Panel headerText="Initial tax properties">
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblCountryKey}" />
-                    <Text text="{/header/land1}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblTaxType}" />
-                    <Text text="{/header/mwart}" />
-                  </html:div>
-                </Panel>
-                <Panel headerText="VAT tax scenario">
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblVatScenario}" />
-                    <Text text="{/header/scen}" />
-                  </html:div>
-                </Panel>
-                <Panel headerText="Tax specific attributes">
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblTaxCodeId}" />
-                    <Text text="{/header/mwskz}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblTaxName}" />
-                    <Text text="{/header/mwskz_name}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblTaxJur}" />
-                    <Text text="{/header/txjcd}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>chkCheckId}" />
-                    <Text text="{/header/pruef}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblReportCountry}" />
-                    <Text text="{/header/lstml}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblEuCode}" />
-                    <Text text="{/header/egrkz}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblTargetTaxCode}" />
-                    <Text text="{/header/zmwsk}" />
-                  </html:div>
-                  <html:div class="form-row">
-                    <Label text="{i18n>lblTolerance}" />
-                    <Text text="{/header/tolerance}" />
-                  </html:div>
-                </Panel>
-                <Panel headerText="Condition types">
-                <table:Table rows="{/schema/}" selectionMode="None" visibleRowCountMode="Fixed" visibleRowCount="6" paste="onPaste" id="tableConditionTypes">
-                  <table:columns>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblConditionType}" />
-                      <table:template>
-                        <Text text="{kschl}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="25%">
-                      <Label text="{i18n>lblDescription}" />
-                      <table:template>
-                        <Text text="{vtext}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblTaxProcedure}" />
-                      <table:template>
-                        <Text text="{kalsm}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblPosition}" />
-                      <table:template>
-                        <Text text="{stunr}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="10%">
-                      <Label text="{i18n>lblAccountKey}" />
-                      <table:template>
-                        <Text text="{kvsl1}" />
-                      </table:template>
-                    </table:Column>
-                    <table:Column width="20%">
-                      <Label text="{i18n>lblRate}" />
-                      <table:template>
-                        <Text text="{kbetr}" />
-                      </table:template>
-                    </table:Column>
-                  </table:columns>
-                </table:Table>
-                </Panel>
-                <Button text="Back" press="backToStep4" id="button-backToStep4" class="sapUiSmallMarginTop" />
-              </WizardStep>
+              <!-- 5th step: Review All Data -->
+              <core:Fragment fragmentName="taco.view.fragment.ReviewAllData" type="XML" />
             </Wizard>
           </content>
         </Page>

@@ -1,0 +1,64 @@
+<core:FragmentDefinition xmlns="sap.m"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns:table="sap.ui.table"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc">
+  <WizardStep id="step-review-all" title="{i18n>step5Title}">
+    <html:div>
+      <Panel headerText="Initial tax properties">
+        <html:div class="form-row">
+          <Label text="{i18n>lblCountryKey}" />
+          <Text text="{/header/land1}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>lblTaxType}" />
+          <Text text="{/header/mwart}" />
+        </html:div>
+      </Panel>
+      <Panel headerText="VAT tax scenario">
+        <html:div class="form-row">
+          <Label text="{i18n>lblVatScenario}" />
+          <Text text="{/header/scen}" />
+        </html:div>
+      </Panel>
+      <Panel headerText="Tax specific attributes">
+        <html:div class="form-row">
+          <Label text="{i18n>lblTaxCodeId}" />
+          <Text text="{/header/mwskz}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>lblTaxName}" />
+          <Text text="{/header/mwskz_name}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>lblTaxJur}" />
+          <Text text="{/header/txjcd}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>chkCheckId}" />
+          <Text text="{/header/pruef}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>lblReportCountry}" />
+          <Text text="{/header/lstml}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>lblEuCode}" />
+          <Text text="{/header/egrkz}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>lblTargetTaxCode}" />
+          <Text text="{/header/zmwsk}" />
+        </html:div>
+        <html:div class="form-row">
+          <Label text="{i18n>lblTolerance}" />
+          <Text text="{/header/tolerance}" />
+        </html:div>
+      </Panel>
+      <Panel headerText="Condition types">
+        <core:Fragment fragmentName="taco.view.fragment.tables.TableReview" type="XML"/>
+      </Panel>
+      <Button text="Back" press="onPressBackToSetConditionTypes" id="button-back-to-step4" class="sapUiSmallMarginTop" />
+    </html:div>
+  </WizardStep>
+</core:FragmentDefinition>
