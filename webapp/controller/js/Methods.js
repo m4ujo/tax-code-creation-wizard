@@ -10,8 +10,10 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
 
       if (aParams) {
         aParams.forEach((param) => {
-          param.value = param.value.replace("&", "%26");
-          param.value = param.value.replace(" ", "%20");
+          if (typeof param.value === "string") {
+            param.value = param.value.replace("&", "%26");
+            param.value = param.value.replace(" ", "%20");
+          }
           url += `&${param.type}=${param.value}`;
         });
       }
@@ -60,6 +62,24 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
           },
         });
       });
+    },
+
+    fnBuildHeaderData: function (...aFields) {
+      let headerData = {
+        land1: aFields[0].getValue(),
+        kalsm: aFields[11].kalsm,
+        mwart: aFields[1].getSelectedKey(),
+        mwskz: aFields[2].getValue(),
+        mwskz_name: aFields[3].getValue(),
+        txjcd: aFields[4].getValue(),
+        scen: aFields[5].getValue(),
+        pruef: aFields[6].getSelected(),
+        zmwsk: aFields[7].getValue(),
+        egrkz: aFields[8].getValue(),
+        lstml: aFields[9].getValue(),
+        tolerance: aFields[10].getValue(),
+      };
+      return headerData;
     },
 
     fnSetDataForReview: function (...aFields) {

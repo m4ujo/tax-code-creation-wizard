@@ -19,6 +19,8 @@ sap.ui.define(["sap/ui/core/library"], function (coreLibrary) {
       getTaxProcedures: "GET_TAX_PROCEDURE",
       checkTaxCode: "CHECK_TAX_CODE",
       postCreateTaxCode: "POST_CREATE_TAX_CODE",
+      validateReturnCountry: "VALIDATE_RETURN_COUNTRY",
+      checkDeferredTaxInfo: "CHECK_DEFERRED_TAX_INFO"
     },
   };
 });
