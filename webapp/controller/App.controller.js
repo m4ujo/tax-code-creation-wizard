@@ -49,6 +49,7 @@ sap.ui.define(
         this.oTableDeferred = this.byId("table-deferred");
         this.oContainerTableDeferred = this.byId("container-table-deferred");
         this.oBtnBackToStep3 = this.byId("button-back-to-step3");
+        this.oBtnDeleteTableDefault = this.byId("btn__deleteTableDefault");
 
         // Step 5
         this.oStepReviewAll = this.byId("step-review-all");
@@ -350,10 +351,10 @@ sap.ui.define(
                 );
                 Methods.fnGetAjax(this.sUrl).then((data) => {
                   console.log(data[0]);
-                  if ((data[0].auto_deftax === "X" && data[0].deftax_scen === "X") && data[0].status_code !== "E") {
+                  if (data[0].auto_deftax === "X" && data[0].deftax_scen === "X" && data[0].status_code !== "E") {
                     console.log("Show new table");
                     this.oContainerTableDeferred.setVisible(true);
-                  } else if ((data[0].auto_deftax === "" && data[0].deftax_scen === "") && data[0].status_code === "S") {
+                  } else if (data[0].auto_deftax === "" && data[0].deftax_scen === "" && data[0].status_code === "S") {
                     this.oStepTaxAttr.setValidated(false);
                   } else {
                     this.oStepTaxAttr.setValidated(false);
@@ -404,6 +405,8 @@ sap.ui.define(
         );
 
         this.oStepReviewAll.setModel(new JSONModel(this.aFinalDataPost));
+
+        this.oBtnDeleteTableDefault.setVisible(false)
       },
 
       onPressBackToStepTaxAttr: function () {
@@ -414,14 +417,32 @@ sap.ui.define(
         // Show MessageBox here !!!!!!!
         this.fnClearInputsForStep(4);
 
+        this.oStepTaxAttr.setValidated(true);
+
         this.oWizard.previousStep();
         this.oBtnBackToStep2.setVisible(true);
       },
 
       onPressDeleteConditionTypes: function () {
         let oTable = this.oTableDefault;
-        let selectedRows = oTable.getSelectedIndices();
-        MessageToast.show(`${selectedRows}`);
+        let indices = oTable.getSelectedIndices();
+        let tableData = oTable.getModel().oData;
+        let model;
+
+        console.log(indices, tableData);
+
+        if (tableData.length > indices.length) {
+          indices
+          .slice()
+          .reverse()
+          .forEach((index) => {
+            tableData.splice(index, 1);
+          });
+          model = new JSONModel(tableData);
+          this.oTableDefault.setModel(model);
+        } else {
+          MessageBox.error("");
+        }
       },
 
       // Step 5 --------------------------------------------
@@ -430,6 +451,8 @@ sap.ui.define(
         this.fnChangeStateOfControlsForTheStep(4, true);
         this.oWizard.previousStep();
         this.oBtnBackToStep3.setVisible(true);
+
+        this.oBtnDeleteTableDefault.setVisible(true)
       },
 
       onComplete: function () {
@@ -454,7 +477,7 @@ sap.ui.define(
 
                 console.log(data);
 
-                if (data.status_code === "S") {
+                if (data[0].status_code === "S") {
                   MessageBox.success(`The tax code has been created successfully`, {
                     actions: [MessageBox.Action.OK],
                     onClose: function (sAction) {
@@ -464,7 +487,7 @@ sap.ui.define(
                     },
                   });
                 } else {
-                  MessageBox.error(`${data.status_message}`);
+                  MessageBox.error(`${data[0].status_message}`);
                 }
 
                 this._pBusyDialog.then(function (oBusyDialog) {

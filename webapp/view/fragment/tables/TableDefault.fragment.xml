@@ -41,5 +41,5 @@
       </table:Column>
     </table:columns>
   </table:Table>
-  <Button icon="sap-icon://delete" type="Emphasized" press="onPressDeleteConditionTypes" ariaLabelledBy="deleteButton" class="sapUiSmallMarginTop" />
+  <Button icon="sap-icon://delete" id="btn__deleteTableDefault" type="Emphasized" press="onPressDeleteConditionTypes" ariaLabelledBy="deleteButton" class="sapUiSmallMarginTop" />
 </core:FragmentDefinition>
