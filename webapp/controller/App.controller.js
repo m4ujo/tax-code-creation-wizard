@@ -440,8 +440,6 @@ sap.ui.define(
           });
           model = new JSONModel(tableData);
           this.oTableDefault.setModel(model);
-        } else {
-          MessageBox.error("");
         }
       },
 
