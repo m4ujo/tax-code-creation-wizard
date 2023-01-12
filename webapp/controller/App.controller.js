@@ -281,88 +281,93 @@ sap.ui.define(
 
         if (bValidated && this.oIptTaxCodeId.getValue().length === 2) {
           this.oStepTaxAttr.setValidated(bValidated);
-
-          this.sUrl = Methods.fnBuildUrl(
-            Constants._oUrlCodes.checkTaxCode,
-            { type: "land1", value: this.oCbxCountryKey.getValue() },
-            { type: "mwskz", value: this.oIptTaxCodeId.getValue() },
-            { type: "txjcd", value: this.oCbxTaxJur.getValue() }
-          );
-          Methods.fnGetAjax(this.sUrl).then((response) => {
-            const data = response[0];
-
-            if (data.status_code === "E") {
-              this.fnChangeStateOfControlsForTheStep(3, true);
-              this.oBtnBackToStep2.setVisible(true);
-              this.oWizard.previousStep();
-              MessageBox.error(data.status_message);
-            } else {
-              this.sUrl = Methods.fnBuildUrl(
-                Constants._oUrlCodes.getTaxProcedures,
-                { type: "land1", value: this.oCbxCountryKey.getValue() },
-                { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
-                { type: "scen", value: this.oCbxVatScenarios.getValue() }
-              );
-
-              Methods.fnGetAjax(this.sUrl).then((response) => {
-                if (response.success === "false") {
-                  this.fnChangeStateOfControlsForTheStep(3, true);
-                  this.oBtnBackToStep2.setVisible(true);
-                  this.oWizard.previousStep();
-                  MessageBox.error(response.msg);
-                } else {
-                  this.oTableDefault.setModel(new JSONModel(response.data));
-                  // ***************************************** New valid for deferred tax
-                  this.header = Methods.fnBuildHeaderData(
-                    this.oCbxCountryKey,
-                    this.oCbxTaxType,
-                    this.oIptTaxCodeId,
-                    this.oIptTaxName,
-                    this.oCbxTaxJur,
-                    this.oCbxVatScenarios,
-                    this.oChkCheckId,
-                    this.oCbxTargetTaxCode,
-                    this.oCbxEuCode,
-                    this.oCbxReportCountry,
-                    this.oIptTolerance,
-                    response.data[0]
-                  );
-                  this.sUrl = Methods.fnBuildUrl(
-                    Constants._oUrlCodes.checkDeferredTaxInfo,
-                    { type: "land1", value: this.header.land1 },
-                    { type: "kalsm", value: this.header.kalsm },
-                    { type: "mwart", value: this.header.mwart },
-                    { type: "mwskz", value: this.header.mwskz },
-                    { type: "mwskz_name", value: this.header.mwskz_name },
-                    { type: "txjcd", value: this.header.txjcd },
-                    { type: "scen", value: this.header.scen },
-                    { type: "pruef", value: this.header.pruef ? "X" : "" },
-                    { type: "zmwsk", value: this.header.zmwsk },
-                    { type: "egrkz", value: this.header.egrkz },
-                    { type: "lstml", value: this.header.lstml },
-                    { type: "tolerance", value: this.header.tolerance }
-                  );
-                  Methods.fnGetAjax(this.sUrl).then((data) => {
-                    console.log(data[0]);
-                    if (data[0].auto_deftax === "X" && data[0].deftax_scen === "X" && data[0].status_code !== "E") {
-                      console.log("Show new table");
-                      this.oContainerTableDeferred.setVisible(true);
-                    } else {
-                      this.oStepTaxAttr.setValidated(false);
-                      this.oContainerTableDeferred.setVisible(false);
-                      MessageBox.error(`${data[0].status_message}`);
-                    }
-                  });
-                }
-              });
-            }
-          });
         }
       },
 
       onCompleteTaxAttr: function () {
         this.fnChangeStateOfControlsForTheStep(3, false);
         this.oBtnBackToStep2.setVisible(false);
+
+        this.sUrl = Methods.fnBuildUrl(
+          Constants._oUrlCodes.checkTaxCode,
+          { type: "land1", value: this.oCbxCountryKey.getValue() },
+          { type: "mwskz", value: this.oIptTaxCodeId.getValue() },
+          { type: "txjcd", value: this.oCbxTaxJur.getValue() }
+        );
+        Methods.fnGetAjax(this.sUrl).then((response) => {
+          const data = response[0];
+
+          if (data.status_code === "E") {
+            this.fnChangeStateOfControlsForTheStep(3, true);
+            this.oBtnBackToStep2.setVisible(true);
+            this.oWizard.previousStep();
+            MessageBox.error(data.status_message);
+          } else {
+            this.sUrl = Methods.fnBuildUrl(
+              Constants._oUrlCodes.getTaxProcedures,
+              { type: "land1", value: this.oCbxCountryKey.getValue() },
+              { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
+              { type: "scen", value: this.oCbxVatScenarios.getValue() }
+            );
+
+            Methods.fnGetAjax(this.sUrl).then((response) => {
+              if (response.success === "false") {
+                this.fnChangeStateOfControlsForTheStep(3, true);
+                this.oBtnBackToStep2.setVisible(true);
+                this.oWizard.previousStep();
+                MessageBox.error(response.msg);
+              } else {
+                this.oTableDefault.setModel(new JSONModel(response.data));
+                // ***************************************** New valid for deferred tax
+                this.header = Methods.fnBuildHeaderData(
+                  this.oCbxCountryKey,
+                  this.oCbxTaxType,
+                  this.oIptTaxCodeId,
+                  this.oIptTaxName,
+                  this.oCbxTaxJur,
+                  this.oCbxVatScenarios,
+                  this.oChkCheckId,
+                  this.oCbxTargetTaxCode,
+                  this.oCbxEuCode,
+                  this.oCbxReportCountry,
+                  this.oIptTolerance,
+                  response.data[0]
+                );
+                this.sUrl = Methods.fnBuildUrl(
+                  Constants._oUrlCodes.checkDeferredTaxInfo,
+                  { type: "land1", value: this.header.land1 },
+                  { type: "kalsm", value: this.header.kalsm },
+                  { type: "mwart", value: this.header.mwart },
+                  { type: "mwskz", value: this.header.mwskz },
+                  { type: "mwskz_name", value: this.header.mwskz_name },
+                  { type: "txjcd", value: this.header.txjcd },
+                  { type: "scen", value: this.header.scen },
+                  { type: "pruef", value: this.header.pruef ? "X" : "" },
+                  { type: "zmwsk", value: this.header.zmwsk },
+                  { type: "egrkz", value: this.header.egrkz },
+                  { type: "lstml", value: this.header.lstml },
+                  { type: "tolerance", value: this.header.tolerance }
+                );
+                Methods.fnGetAjax(this.sUrl).then((data) => {
+                  console.log(data[0]);
+                  if ((data[0].auto_deftax === "X" && data[0].deftax_scen === "X") && data[0].status_code !== "E") {
+                    console.log("Show new table");
+                    this.oContainerTableDeferred.setVisible(true);
+                  } else if ((data[0].auto_deftax === "" && data[0].deftax_scen === "") && data[0].status_code === "S") {
+                    this.oStepTaxAttr.setValidated(false);
+                  } else {
+                    this.oStepTaxAttr.setValidated(false);
+                    this.oContainerTableDeferred.setVisible(false);
+                    this.fnChangeStateOfControlsForTheStep(3, true);
+                    this.oBtnBackToStep2.setVisible(true);
+                    this.oWizard.previousStep();
+                    MessageBox.error(`${data[0].status_message}`);
+                  }
+                });
+              }
+            });
+          }
+        });
       },
 
       onPressBackToVatScenarios: function () {

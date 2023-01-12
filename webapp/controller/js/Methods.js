@@ -27,18 +27,14 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       const status = aFieldStatus[0];
       const controlType = oValidatedField.getMetadata().getName();
       let sSelectedKey = "";
-
       oValidatedField.setValueState(Constants.oValueState.Error);
-
       if (controlType === "sap.m.ComboBox") {
         sSelectedKey = oValidatedField.getSelectedKey();
       }
-
       if ((status === "R" || status === undefined) && sValue.length === 0) {
         oValidatedField.setValueStateText("Mandatory field, don't leave empty");
-      } else if (controlType === "sap.m.ComboBox" && !sSelectedKey && sValue) {
+      } else if (controlType === "sap.m.ComboBox" && !sSelectedKey && sValue && oValidatedField.sId !== "container-taco---app--cbx-target-tax-code") {
         oValidatedField.setValueStateText("Select an item from the list");
-
         if (status === "O") {
           oValidatedField.setValueStateText("Select an item from the list or leave empty");
           oValidatedField.setValueState(Constants.oValueState.Warning);
