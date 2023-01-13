@@ -50,10 +50,13 @@ sap.ui.define(
         this.oContainerTableDeferred = this.byId("container-table-deferred");
         this.oBtnBackToStep3 = this.byId("button-back-to-step3");
         this.oBtnDeleteTableDefault = this.byId("btn__deleteTableDefault");
+        this.oIptReceiverTaxName = this.byId("input-receiver-tax-name");
 
         // Step 5
         this.oStepReviewAll = this.byId("step-review-all");
         this.oTableReview = this.byId("table-review");
+        this.oTableReviewDeferred = this.byId("table-review-deferred");
+        this.oContainerReviewTableDeferred = this.byId("container-table-deferred-review");
         this.oBtnBackToStep4 = this.byId("button-back-to-step4");
 
         this.aFinalDataPost = {};
@@ -89,7 +92,11 @@ sap.ui.define(
           this.oCbxTargetTaxCode.setEnabled(bState);
           this.oIptTolerance.setEnabled(bState);
         } else if (iStep === 4) {
+          this.oIptReceiverTaxName.setEnabled(bState);
           this.oTableDefault.getRows().forEach((row) => {
+            row.getCells()[5].setEnabled(bState);
+          });
+          this.oTableDeferred.getRows().forEach((row) => {
             row.getCells()[5].setEnabled(bState);
           });
         }
@@ -119,6 +126,10 @@ sap.ui.define(
         } else if (iStep === 4) {
           this.oTableDefault.setModel(new JSONModel());
           this.oTableDefault.getRows().forEach((row) => {
+            row.getCells()[5].setValue(0.0);
+          });
+          this.oTableDeferred.setModel(new JSONModel());
+          this.oTableDeferred.getRows().forEach((row) => {
             row.getCells()[5].setValue(0.0);
           });
         }
@@ -218,6 +229,17 @@ sap.ui.define(
         this.fnChangeStateOfControlsForTheStep(2, false);
         // Set visible false button for back to first step
         this.oBtnBackToStep1.setVisible(false);
+
+        this.scenAdd = "";
+
+        let scenariosData = this.oCbxVatScenarios.getModel().oData;
+        scenariosData.forEach((scenario) => {
+          if (scenario.scen === this.oCbxVatScenarios.getValue()) {
+            this.scenAdd = scenario.scen_add;
+          }
+        });
+
+        console.log(this.scenAdd);
       },
 
       onPressBackToTaxProperties: function () {
@@ -319,7 +341,7 @@ sap.ui.define(
                 MessageBox.error(response.msg);
               } else {
                 this.oTableDefault.setModel(new JSONModel(response.data));
-                // ***************************************** New valid for deferred tax
+
                 this.header = Methods.fnBuildHeaderData(
                   this.oCbxCountryKey,
                   this.oCbxTaxType,
@@ -334,6 +356,7 @@ sap.ui.define(
                   this.oIptTolerance,
                   response.data[0]
                 );
+
                 this.sUrl = Methods.fnBuildUrl(
                   Constants._oUrlCodes.checkDeferredTaxInfo,
                   { type: "land1", value: this.header.land1 },
@@ -349,15 +372,22 @@ sap.ui.define(
                   { type: "lstml", value: this.header.lstml },
                   { type: "tolerance", value: this.header.tolerance }
                 );
+
                 Methods.fnGetAjax(this.sUrl).then((data) => {
                   console.log(data[0]);
                   if (data[0].auto_deftax === "X" && data[0].deftax_scen === "X" && data[0].status_code !== "E") {
-                    console.log("Show new table");
                     this.oContainerTableDeferred.setVisible(true);
+                    this.oContainerReviewTableDeferred.setVisible(true);
                   } else if (data[0].auto_deftax === "" && data[0].deftax_scen === "" && data[0].status_code === "S") {
                     this.oStepTaxAttr.setValidated(false);
+                    this.oStepConditionTypes.setValidated(true);
+                    this.oContainerReviewTableDeferred.setVisible(false);
+                    this.oContainerTableDeferred.setVisible(false);
+                    this.fnChangeStateOfControlsForTheStep(3, true);
+                    this.oBtnBackToStep2.setVisible(true);
                   } else {
                     this.oStepTaxAttr.setValidated(false);
+                    this.oContainerReviewTableDeferred.setVisible(false);
                     this.oContainerTableDeferred.setVisible(false);
                     this.fnChangeStateOfControlsForTheStep(3, true);
                     this.oBtnBackToStep2.setVisible(true);
@@ -367,6 +397,18 @@ sap.ui.define(
                 });
               }
             });
+
+            if (this.scenAdd !== "") {
+              this.sUrl = Methods.fnBuildUrl(
+                Constants._oUrlCodes.getTaxProcedures,
+                { type: "land1", value: this.oCbxCountryKey.getValue() },
+                { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
+                { type: "scen", value: this.scenAdd }
+              );
+              Methods.fnGetAjax(this.sUrl).then((response) => {
+                this.oTableDeferred.setModel(new JSONModel(response.data));
+              });
+            }
           }
         });
       },
@@ -404,9 +446,42 @@ sap.ui.define(
           this.oTableReview
         );
 
-        this.oStepReviewAll.setModel(new JSONModel(this.aFinalDataPost));
+        this.aFinalDataPostTgt = {}
 
-        this.oBtnDeleteTableDefault.setVisible(false)
+        if (this.scenAdd !== "") {
+          this.aFinalDataPostTgt = Methods.fnSetDataForReviewDeferred(
+            this.oCbxCountryKey.getValue(),
+            this.oCbxTaxType.getSelectedKey(),
+            this.oCbxTargetTaxCode.getValue(),
+            this.oIptReceiverTaxName.getValue(),
+            this.oCbxTaxJur.getValue(),
+            this.scenAdd,
+            this.oChkCheckId.getSelected(),
+            "",
+            this.oCbxEuCode.getValue(),
+            this.oCbxReportCountry.getValue(),
+            this.oIptTolerance.getValue(),
+            this.oTableDeferred,
+            this.oTableReviewDeferred
+          );
+        }
+        console.log(this.aFinalDataPost);
+        console.log(this.aFinalDataPostTgt);
+
+        this.oStepReviewAll.setModel(new JSONModel(this.aFinalDataPost));
+        this.oTableReviewDeferred.setModel(new JSONModel(this.aFinalDataPostTgt));
+
+        this.oBtnDeleteTableDefault.setVisible(false);
+      },
+
+      validateReceiverTaxName: function () {
+        this.oStepConditionTypes.setValidated(false);
+
+        if (this.oIptReceiverTaxName.getValue().length === 0) {
+          this.oStepConditionTypes.setValidated(false);
+        } else {
+          this.oStepConditionTypes.setValidated(true);
+        }
       },
 
       onPressBackToStepTaxAttr: function () {
@@ -433,11 +508,11 @@ sap.ui.define(
 
         if (tableData.length > indices.length) {
           indices
-          .slice()
-          .reverse()
-          .forEach((index) => {
-            tableData.splice(index, 1);
-          });
+            .slice()
+            .reverse()
+            .forEach((index) => {
+              tableData.splice(index, 1);
+            });
           model = new JSONModel(tableData);
           this.oTableDefault.setModel(model);
         }
@@ -450,15 +525,20 @@ sap.ui.define(
         this.oWizard.previousStep();
         this.oBtnBackToStep3.setVisible(true);
 
-        this.oBtnDeleteTableDefault.setVisible(true)
+        this.oBtnDeleteTableDefault.setVisible(true);
       },
 
       onComplete: function () {
-        console.log(this.aFinalDataPost);
-
         this._pBusyDialog.then(
           function (oBusyDialog) {
             oBusyDialog.open(); // Open busy dialog when Submit button is clicked
+
+            let data = this.aFinalDataPost, data_tgt = this.aFinalDataPostTgt
+
+            this.final_data = {
+              data,
+              data_tgt
+            }
 
             this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.postCreateTaxCode);
             fetch(this.sUrl, {
@@ -466,7 +546,7 @@ sap.ui.define(
               headers: {
                 "Content-Type": "text/plain",
               },
-              body: JSON.stringify(this.aFinalDataPost),
+              body: JSON.stringify(this.final_data),
             })
               .then((response) => response.json())
               .then((data) => {

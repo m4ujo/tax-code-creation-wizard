@@ -11,6 +11,7 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       if (aParams) {
         aParams.forEach((param) => {
           if (typeof param.value === "string") {
+            param.value = param.value.replace("%", "%25");
             param.value = param.value.replace("&", "%26");
             param.value = param.value.replace(" ", "%20");
           }
@@ -93,6 +94,49 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
           egrkz: aFields[8].getValue(),
           lstml: aFields[9].getValue(),
           tolerance: aFields[10].getValue(),
+        };
+
+      aFields[11].getRows().forEach((row) => {
+        const schemaTemp = {
+          kschl: row.getCells()[0].getText(),
+          vtext: row.getCells()[1].getText(),
+          kalsm: row.getCells()[2].getText(),
+          stunr: row.getCells()[3].getText(),
+          kvsl1: row.getCells()[4].getText(),
+          kbetr: row.getCells()[5].getValue(),
+        };
+
+        if (schemaTemp.kschl) {
+          headerData.kalsm = schemaTemp.kalsm;
+          schemaData.push(schemaTemp);
+        }
+      });
+
+      let aFinalData = {
+        header: headerData,
+        schema: schemaData,
+      };
+
+      aFields[12].mProperties.visibleRowCount = aFinalData.schema.length;
+
+      return aFinalData;
+    },
+
+    fnSetDataForReviewDeferred: function (...aFields) {
+      let schemaData = [],
+        headerData = {
+          land1: aFields[0], // countryKey
+          kalsm: "",
+          mwart: aFields[1], // taxType
+          mwskz: aFields[2], // targetTaxCode
+          mwskz_name: aFields[3], // receiverTaxName
+          txjcd: aFields[4], // taxJurisdiction
+          scen: aFields[5], // scen.add
+          pruef: aFields[6], // checkID
+          zmwsk: aFields[7], // este debe estar vacio
+          egrkz: aFields[8], //
+          lstml: aFields[9], // MISMO countryKey
+          tolerance: aFields[10], // new tolerance
         };
 
       aFields[11].getRows().forEach((row) => {

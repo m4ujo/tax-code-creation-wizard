@@ -2,7 +2,7 @@
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc">
-  <WizardStep id="step-condition-types" title="{i18n>step4Title}" validated="true" activate="onActivateConditionTypes" complete="onCompleteConditionTypes">
+  <WizardStep id="step-condition-types" title="{i18n>step4Title}" validated="false" activate="onActivateConditionTypes" complete="onCompleteConditionTypes">
     <html:div id="container-table-default">
       <core:Fragment fragmentName="taco.view.fragment.tables.TableDefault" type="XML"/>
     </html:div>
@@ -11,6 +11,10 @@
     <html:br />
 
     <Panel id="container-table-deferred" headerText="Deferred Tax Receiver" visible="false">
+      <html:div id="field-RECEIVERTAXNAME" class="form-row">
+        <Label text="{i18n>lblReceiverTaxName}" labelFor="input-receiver-tax-name" />
+        <Input id="input-receiver-tax-name" width="100%" class="input" liveChange="validateReceiverTaxName" required="true" />
+      </html:div>
       <core:Fragment fragmentName="taco.view.fragment.tables.TableDeferred" type="XML"/>
     </Panel>
 

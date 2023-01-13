@@ -57,6 +57,9 @@
       </Panel>
       <Panel headerText="Condition types">
         <core:Fragment fragmentName="taco.view.fragment.tables.TableReview" type="XML"/>
+        <Panel id="container-table-deferred-review" headerText="Deferred condition types">
+          <core:Fragment fragmentName="taco.view.fragment.tables.TableReviewDeferred" type="XML"/>
+        </Panel>
       </Panel>
       <Button text="Back" press="onPressBackToSetConditionTypes" id="button-back-to-step4" class="sapUiSmallMarginTop" />
     </html:div>
