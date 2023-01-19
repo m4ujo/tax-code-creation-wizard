@@ -8,51 +8,51 @@
       <Panel headerText="Initial tax properties">
         <html:div class="form-row">
           <Label text="{i18n>lblCountryKey}" />
-          <Text text="{/header/land1}" />
+          <Text text="{/land1}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>lblTaxType}" />
-          <Text text="{/header/mwart}" />
+          <Text text="{/mwart}" />
         </html:div>
       </Panel>
       <Panel headerText="VAT tax scenario">
         <html:div class="form-row">
           <Label text="{i18n>lblVatScenario}" />
-          <Text text="{/header/scen}" />
+          <Text text="{/scen}" />
         </html:div>
       </Panel>
       <Panel headerText="Tax specific attributes">
         <html:div class="form-row">
           <Label text="{i18n>lblTaxCodeId}" />
-          <Text text="{/header/mwskz}" />
+          <Text text="{/mwskz}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>lblTaxName}" />
-          <Text text="{/header/mwskz_name}" />
+          <Text text="{/mwskz_name}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>lblTaxJur}" />
-          <Text text="{/header/txjcd}" />
+          <Text text="{/txjcd}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>chkCheckId}" />
-          <Text text="{/header/pruef}" />
+          <Text text="{/pruef}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>lblReportCountry}" />
-          <Text text="{/header/lstml}" />
+          <Text text="{/lstml}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>lblEuCode}" />
-          <Text text="{/header/egrkz}" />
+          <Text text="{/egrkz}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>lblTargetTaxCode}" />
-          <Text text="{/header/zmwsk}" />
+          <Text text="{/zmwsk}" />
         </html:div>
         <html:div class="form-row">
           <Label text="{i18n>lblTolerance}" />
-          <Text text="{/header/tolerance}" />
+          <Text text="{/tolerance}" />
         </html:div>
       </Panel>
       <Panel headerText="Condition types">

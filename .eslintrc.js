@@ -1,13 +1,17 @@
-{
+module.exports = {
   "env": {
     "browser": true,
     "es6": true
   },
   "globals": {
     "sap": true,
-    "jQuery": true,
-    "$": true,
-    "Promise": true
+    "jQuery": true
+  },
+  "extends": "eslint:recommended",
+  "overrides": [
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest"
   },
   "rules": {
     "block-scoped-var": 2,
@@ -27,7 +31,7 @@
     "keyword-spacing": [2, {"after": true}],
     "space-unary-ops": 2,
     "wrap-iife": [2, "any"],
-    "camelcase": 2,
+    // "camelcase": 2,
     "consistent-return": 2,
     "max-nested-callbacks": [1, 3],
     "new-cap": 1,
@@ -40,13 +44,25 @@
     "no-use-before-define": [1, "nofunc"],
     "no-warning-comments": 1,
     "strict": 2,
-    "valid-jsdoc": [1, {
-    "requireReturn": false
-    }],
+    //  "valid-jsdoc": [1, {
+    //  "requireReturn": false
+    //  }],
     "eol-last": 0,
     "eqeqeq": 0,
     "no-trailing-spaces": 0,
     "no-underscore-dangle": 0,
-    "quotes": 0
+
+    "indent": [
+      "error",
+      2
+    ],
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ]
   }
-}
+};

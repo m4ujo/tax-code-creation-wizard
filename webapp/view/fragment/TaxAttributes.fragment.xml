@@ -4,7 +4,7 @@
   xmlns:form="sap.ui.layout.form"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc">
-  <WizardStep id="step-tax-attr" title="{i18n>step3Title}" validated="false" activate="onActivateStepTaxAttr" complete="onCompleteTaxAttr">
+  <WizardStep id="step-tax-attr" title="{i18n>step3Title}" validated="false" activate="initTaxAttr" complete="completeTaxAttr">
     <form:SimpleForm editable="true" id="form-step3">
       <html:div class="form-row">
         <l:HorizontalLayout id="field-TAXCODE" class="form-row">
@@ -14,7 +14,7 @@
 
         <l:HorizontalLayout id="field-TAXNAME" class="form-row">
           <Label text="{i18n>lblTaxName}" labelFor="input-tax-name" />
-          <Input id="input-tax-name" width="100%" class="input" required="true" liveChange="validateTaxAttr" />
+          <Input id="input-tax-name" width="100%" class="input" required="true" liveChange="validateTaxAttr" placeholder="4 characters minimum" />
         </l:HorizontalLayout>
       </html:div>
 
@@ -53,11 +53,14 @@
 
       <l:HorizontalLayout id="field-TAXTOLERANCEPERCENT" class="form-row">
         <Label text="{i18n>lblTolerance}" labelFor="input-tolerance" />
-        <StepInput id="input-tolerance" value="0.00" displayValuePrecision="2" min="0" max="100" step="0.5" change="validateTaxAttr" />
+        <StepInput id="input-tolerance" value="0.00" displayValuePrecision="2" min="0" max="100" step="0.5" />
         <Label text="%"/>
       </l:HorizontalLayout>
 
     </form:SimpleForm>
-    <Button text="Back" press="onPressBackToVatScenarios" id="button-back-to-step2" />
+    <l:HorizontalLayout class="form-row gap-2">
+      <Button text="Back" press="onPressBackToVatScenarios" id="button-back-to-step2" />
+      <Button text="Check" press="onPressValidateTaxAttr" id="button-validate-step3" visible="false" type="Accept" />
+    </l:HorizontalLayout>
   </WizardStep>
 </core:FragmentDefinition>

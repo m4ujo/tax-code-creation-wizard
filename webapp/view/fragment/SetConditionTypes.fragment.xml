@@ -13,7 +13,7 @@
     <Panel id="container-table-deferred" headerText="Deferred Tax Receiver" visible="false">
       <html:div id="field-RECEIVERTAXNAME" class="form-row">
         <Label text="{i18n>lblReceiverTaxName}" labelFor="input-receiver-tax-name" />
-        <Input id="input-receiver-tax-name" width="100%" class="input" liveChange="validateReceiverTaxName" required="true" />
+        <Input id="input-receiver-tax-name" width="100%" class="input" liveChange="validateReceiverTaxName" required="true" placeholder="4 characters minimum" />
       </html:div>
       <core:Fragment fragmentName="taco.view.fragment.tables.TableDeferred" type="XML"/>
     </Panel>

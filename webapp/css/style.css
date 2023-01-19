@@ -8,6 +8,10 @@
   margin: 0 !important;
 }
 
+.gap-2 {
+  gap: 1rem;
+}
+
 .sapUiRFLContainer {
   width: 100% !important;
   margin-left: 12px;
@@ -34,6 +38,9 @@ tr > td > div > div > span.sapMLabel {
   width: 120px;
 }
 #container-taco---app--input-tax-name {
+  width: 240px !important;
+}
+#container-taco---app--input-receiver-tax-name {
   width: 240px !important;
 }
 #container-taco---app--cbx-country-key,

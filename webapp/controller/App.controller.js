@@ -12,6 +12,9 @@ sap.ui.define(
   ],
   function (Controller, Fragment, syncStyleClass, JSONModel, MessageBox, MessageToast, Methods, Constants, Validations) {
     "use strict";
+
+    let data = {}, data_tgt = {};
+
     return Controller.extend("taco.controller.App", {
       onInit: function () {
         // Get elements by ID
@@ -41,6 +44,7 @@ sap.ui.define(
         this.oCbxTargetTaxCode = this.byId("cbx-target-tax-code");
         this.oIptTolerance = this.byId("input-tolerance");
         this.oBtnBackToStep2 = this.byId("button-back-to-step2");
+        this.oBtnValidateTaxAttr = this.byId("button-validate-step3");
 
         // Step 4
         this.oStepConditionTypes = this.byId("step-condition-types");
@@ -49,7 +53,7 @@ sap.ui.define(
         this.oTableDeferred = this.byId("table-deferred");
         this.oContainerTableDeferred = this.byId("container-table-deferred");
         this.oBtnBackToStep3 = this.byId("button-back-to-step3");
-        this.oBtnDeleteTableDefault = this.byId("btn__deleteTableDefault");
+        this.oBtnDeleteTableDefault = this.byId("button-delete-condition-type");
         this.oIptReceiverTaxName = this.byId("input-receiver-tax-name");
 
         // Step 5
@@ -59,7 +63,7 @@ sap.ui.define(
         this.oContainerReviewTableDeferred = this.byId("container-table-deferred-review");
         this.oBtnBackToStep4 = this.byId("button-back-to-step4");
 
-        this.aFinalDataPost = {};
+        this.oFinalDataPost = {};
 
         // Instantiating busy dialog for the end of the tool
         if (!this._pBusyDialog) {
@@ -123,123 +127,265 @@ sap.ui.define(
           this.oCbxTargetTaxCode.setValue("");
           this.oCbxTargetTaxCode.setSelectedKey("");
           this.oIptTolerance.setValue(0.0);
-        } else if (iStep === 4) {
-          this.oTableDefault.setModel(new JSONModel());
-          this.oTableDefault.getRows().forEach((row) => {
-            row.getCells()[5].setValue(0.0);
-          });
-          this.oTableDeferred.setModel(new JSONModel());
-          this.oTableDeferred.getRows().forEach((row) => {
-            row.getCells()[5].setValue(0.0);
+        }
+      },
+
+      /**
+       * Get countries, requesting data from the server
+       * @function
+       * @name fnGetCountries
+       */
+      fnGetCountries: async function () {
+        // Get data from request URL: Countries
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCountry);
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oCbxCountryKey.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxCountry}</a>
+              </span>
+            `
           });
         }
       },
 
-      // Step 1 --------------------------------------------
-      onInitTaxProperties: function () {
-        // Set the status value to error
-        this.oCbxCountryKey.setValueState(Constants.oValueState.Error);
-        this.oCbxTaxType.setValueState(Constants.oValueState.Error);
-
-        // Get data from request URL: Countries
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCountry);
-        Methods.fnGetAjax(this.sUrl).then((response) => {
-          this.oCbxCountryKey.setModel(new JSONModel(response.data));
-        });
-
+      /**
+       * Get countries, requesting data from the server
+       * @function
+       * @name fnGetTaxTypes
+       */
+      fnGetTaxTypes: async function () {
         // Get data from request URL: Tax Types
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxType);
-        Methods.fnGetAjax(this.sUrl).then((response) => {
-          this.oCbxTaxType.setModel(new JSONModel(response.data));
-        });
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oCbxTaxType.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxType}</a>
+              </span>
+            `
+          });
+        }
+      },
+
+      /**
+       * Request for data from countries
+       * @function
+       * @name fnGetReportingCountries
+       */
+      fnGetReportingCountries: async function () {
+        // Get data from request URL: Reporting countries
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getReportCountries);
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oCbxReportCountry.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getReportCountries}</a>
+              </span>
+            `
+          });
+        }
+      },
+
+      /**
+       * Request for data from countries
+       * @function
+       * @name fnGetEuCodes
+       */
+      fnGetEuCodes: async function () {
+        // Get data from request URL: EU Codes
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getEuCodes);
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oCbxEuCode.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getEuCodes}</a>
+              </span>
+            `
+          });
+        }
+      },
+
+      /**
+       * Set fields as required and request data
+       * @function
+       * @name initTaxProperties
+       */
+      initTaxProperties: function () {
+        Methods.fnSetMandatoryField(this.oCbxCountryKey);
+        Methods.fnSetMandatoryField(this.oCbxTaxType);
+
+        this.fnGetCountries();
+        this.fnGetTaxTypes();
+        this.fnGetReportingCountries();
+        this.fnGetEuCodes();
+      },
+
+      fnGetVatScenarios: async function () {
+        // Get data from request URL: VAT Scenarios
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxScenarios,
+          { type: "land1", value: this.oCbxCountryKey.getValue() },
+          { type: "mwart", value: this.oCbxTaxType.getSelectedKey() }
+        );
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+
+          if (this.oResponse.data.length === 0) {
+            MessageBox.error("No scenarios were found, for the entered values.");
+          } else {
+            this.oCbxVatScenarios.setModel(new JSONModel(this.oResponse.data));
+            this.oStepTaxProperties.setValidated(true);
+          }
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxScenarios}</a>
+              </span>
+            `
+          });
+          this.oStepTaxProperties.setValidated(false);
+        }
+
       },
 
       validateTaxProperties: function (oEvent) {
-        // Set the step validation status to FALSE by default
+        // Override step by default
         this.oStepTaxProperties.setValidated(false);
 
         // Make sure an item is chosen from the data list
-        Methods.fnSetValueStateField(oEvent, "R");
+        Methods.fnChangeValueState(oEvent);
 
         // Validate
-        let oValidated = Validations.fnValidStep1(this.oCbxCountryKey, this.oCbxTaxType);
-
-        if (oValidated.bValidated) {
-          Methods.fnGetAjax(oValidated.sUrl).then((response) => {
-            if (response.data.length !== 0) {
-              this.oCbxVatScenarios.setModel(new JSONModel(response.data));
-              this.oStepTaxProperties.setValidated(oValidated.bValidated);
-            } else {
-              MessageBox.error("No scenarios were found, for the entered values.", {
-                details: `
-                    <ul>
-                      <li><strong>Country Key: </strong> ${this.oCbxCountryKey.getValue()}</li>
-                      <li><strong>Tax Type: </strong> ${this.oCbxTaxType.getValue()}</li>
-                    </ul>
-                  `,
-              });
-            }
-          });
+        if (Validations.fnValidStep1(this.oCbxCountryKey, this.oCbxTaxType)) {
+          this.fnGetVatScenarios();
         }
       },
 
-      onCompleteTaxProperties: function () {
+      completeTaxProperties: function () {
         // When the step is finished, disable all controls
         this.fnChangeStateOfControlsForTheStep(1, false);
       },
 
       // Step 2 --------------------------------------------
-      onActivateStepVatScenarios: function () {
+      initVatScenarios: function () {
         // Set the status value to error
-        this.oCbxVatScenarios.setValueState(Constants.oValueState.Error);
+        Methods.fnSetMandatoryField(this.oCbxVatScenarios);
       },
 
-      searchFieldStatus: function (oEvent) {
+      fnGetMoreInfo: function () {
+        let sAutoDeftax = "";
+
+        this.oCbxCountryKey.getModel().oData.forEach((oCountry) => {
+          if (oCountry.land1 === this.oCbxCountryKey.getValue())
+            sAutoDeftax = oCountry.auto_deftax;
+        });
+
+        this.oCbxVatScenarios.getModel().oData.forEach((oScenario) => {
+          if (oScenario.scen === this.oCbxVatScenarios.getValue())
+            this.oMoreInfo = {
+              scenAdd: oScenario.scen_add,
+              deftaxScen: oScenario.deftax_scen,
+              autoDeftax: sAutoDeftax,
+              editableTable: oScenario.allw_excl_kschl
+            };
+        });
+      },
+
+      fnGetConditionTypes: async function (sScenario) {
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxProcedures,
+          { type: "land1", value: this.oCbxCountryKey.getValue() },
+          { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
+          { type: "scen", value: sScenario }
+        );
+
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+
+          if (this.oResponse.data.length === 0) {
+            MessageBox.error("Condition types not found, for the entered scenario.");
+          } else {
+            if (sScenario === this.oMoreInfo.scenAdd) {
+              this.oTableDeferred.setModel(new JSONModel(this.oResponse.data));
+              this.oTableDeferred.mProperties.visibleRowCount = this.oResponse.data.length;
+            } else {
+              this.oTableDefault.setModel(new JSONModel(this.oResponse.data));
+              this.oTableDefault.mProperties.visibleRowCount = this.oResponse.data.length;
+            }
+            this.fnGetFieldStatus();
+          }
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxScenarios}</a>
+              </span>
+            `
+          });
+          this.oStepVatScenarios.setValidated(false);
+        }
+      },
+
+      fnGetFieldStatus: async function () {
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxFieldstatus,
+          { type: "land1", value: this.oCbxCountryKey.getValue() },
+          { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
+          { type: "scen", value: this.oCbxVatScenarios.getValue() }
+        );
+
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+
+          if (this.oResponse.data.length === 0) {
+            MessageBox.error("Fieldstatus not found, for the entered scenario.");
+          } else {
+            this.aFieldStatus = this.oResponse.data;
+            this.oStepVatScenarios.setValidated(true);
+          }
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxFieldstatus}</a>
+              </span>
+            `
+          });
+          this.oStepVatScenarios.setValidated(false);
+        }
+      },
+
+      validateVatScenarios: function (oEvent) {
         // Set the step validation status to FALSE by default
         this.oStepVatScenarios.setValidated(false);
 
         // Make sure an item is chosen from the data list
-        Methods.fnSetValueStateField(oEvent, "R");
+        Methods.fnChangeValueState(oEvent);
 
-        let oValidated = Validations.fnValidStep2(this.oCbxVatScenarios, this.oCbxCountryKey, this.oCbxTaxType);
-
-        if (oValidated.bValidated) {
-          Methods.fnGetAjax(oValidated.sUrl).then((response) => {
-            if (response.data.length !== 0) {
-              Validations.fnCheckFieldStatus(this, this.oChkCheckId, response.data);
-              this.oStepVatScenarios.setValidated(oValidated.bValidated);
-              this.oIptTaxName.setValueState(Constants.oValueState.Error);
-            } else {
-              MessageBox.error("Fieldstatus data not found, for the entered scenario.", {
-                details: `
-                  <ul>
-                  <li><strong>Country Key: </strong> ${this.oCbxCountryKey.getValue()}</li>
-                  <li><strong>Tax Type: </strong> ${this.oCbxTaxType.getSelectedKey()}</li>
-                  <li><strong>VAT Tax Scenario: </strong> ${this.oCbxVatScenarios.getValue()}</li>
-                  </ul>
-                  `,
-              });
-            }
-          });
+        if (Validations.fnValidStep2(this.oCbxVatScenarios)) {
+          this.fnGetConditionTypes(this.oCbxVatScenarios.getValue());
+          this.fnGetMoreInfo();
+          if (this.oMoreInfo.scenAdd !== "") {
+            this.fnGetConditionTypes(this.oMoreInfo.scenAdd);
+          }
         }
       },
 
-      onCompleteVatScenarios: function () {
-        // When the step is finished, disable all controls
+      completeVatScenarios: function () {
         this.fnChangeStateOfControlsForTheStep(2, false);
-        // Set visible false button for back to first step
         this.oBtnBackToStep1.setVisible(false);
-
-        this.scenAdd = "";
-
-        let scenariosData = this.oCbxVatScenarios.getModel().oData;
-        scenariosData.forEach((scenario) => {
-          if (scenario.scen === this.oCbxVatScenarios.getValue()) {
-            this.scenAdd = scenario.scen_add;
-          }
-        });
-
-        console.log(this.scenAdd);
+        Methods.fnCheckFieldStatus(this, this.aFieldStatus);
       },
 
       onPressBackToTaxProperties: function () {
@@ -247,50 +393,131 @@ sap.ui.define(
         this.fnChangeStateOfControlsForTheStep(1, true);
 
         // Clear inputs for the current step, when you return to the previous step
-        // Show MessageBox here !!!!!!!
         this.fnClearInputsForStep(2);
 
         this.oWizard.previousStep();
       },
 
       // Step 3 --------------------------------------------
-      onActivateStepTaxAttr: function () {
-        // Set the status value to error, checking the fieldstatus again
-        let oValidated = Validations.fnValidStep2(this.oCbxVatScenarios, this.oCbxCountryKey, this.oCbxTaxType);
-        Methods.fnGetAjax(oValidated.sUrl).then((response) => {
-          Validations.fnCheckFieldStatus(this, this.oChkCheckId, response.data);
-        });
-        this.oIptTaxName.setValueState(Constants.oValueState.Error);
 
+      fnGetTaxJurisdiction: async function () {
         // Get data from request URL: Tax Jurisdiction
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxJur, {
-          type: "land1",
-          value: this.oCbxCountryKey.getValue(),
-        });
-        Methods.fnGetAjax(this.sUrl).then((response) => {
-          this.oCbxTaxJur.setModel(new JSONModel(response.data));
-        });
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxJur, { type: "land1", value: this.oCbxCountryKey.getValue() });
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oCbxTaxJur.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxJur}</a>
+              </span>
+            `
+          });
+        }
+      },
 
-        // Get data from request URL: Tax Report Countries
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getReportCountries);
-        Methods.fnGetAjax(this.sUrl).then((response) => {
-          this.oCbxReportCountry.setModel(new JSONModel(response.data));
-        });
+      fnGetTaxCodes: async function () {
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCodes, { type: "land1", value: this.oCbxCountryKey.getValue() });
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oCbxTargetTaxCode.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxCodes}</a>
+              </span>
+            `
+          });
+        }
+      },
 
-        // Get data from request URL: EU Codes
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getEuCodes);
-        Methods.fnGetAjax(this.sUrl).then((response) => {
-          this.oCbxEuCode.setModel(new JSONModel(response.data));
-        });
+      initTaxAttr: function () {
+        this.fnGetTaxJurisdiction();
+        this.fnGetTaxCodes();
+      },
 
-        // Get data from request URL: Target Tax Code
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCodes, {
-          type: "land1",
-          value: this.oCbxCountryKey.getValue(),
-        });
-        Methods.fnGetAjax(this.sUrl).then((response) => {
-          this.oCbxTargetTaxCode.setModel(new JSONModel(response.data));
-        });
+      fnCheckTaxCode: async function () {
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.checkTaxCode,
+          { type: "land1", value: this.oCbxCountryKey.getValue() },
+          { type: "mwskz", value: this.oIptTaxCodeId.getValue().toUpperCase() },
+          { type: "txjcd", value: this.oCbxTaxJur.getValue() }
+        );
+
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+
+          if (this.oResponse[0].status_code === "E") {
+            MessageToast.show(`${this.oResponse[0].status_message}`);
+            this.oStepTaxAttr.setValidated(false);
+          } else if (this.oResponse[0].status_code === "S") {
+            MessageToast.show("No errors found, all required fields were validated");
+            this.oBtnValidateTaxAttr.setVisible(false);
+            this.oStepTaxAttr.setValidated(true);
+
+            this.fnGetConditionTypes(this.oCbxVatScenarios.getValue());
+            if (this.oMoreInfo.scenAdd !== "") {
+              this.fnGetConditionTypes(this.oMoreInfo.scenAdd);
+            }
+          }
+
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.checkTaxCode}</a>
+              </span>
+            `
+          });
+        }
+      },
+
+      fnCheckDeferredTaxInfo: async function () {
+        this.sUrl = Methods.fnBuildUrl(
+          Constants._oUrlCodes.checkDeferredTaxInfo,
+          { type: "land1", value: this.oCbxCountryKey.getValue() },
+          { type: "kalsm", value: this.oTableDefault.getModel().oData[0].kalsm },
+          { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
+          { type: "mwskz", value: this.oIptTaxCodeId.getValue() },
+          { type: "mwskz_name", value: this.oIptTaxName.getValue() },
+          { type: "txjcd", value: this.oCbxTaxJur.getValue() },
+          { type: "scen", value: this.oCbxVatScenarios.getValue() },
+          { type: "pruef", value: this.oChkCheckId.getSelected() ? "X" : "" },
+          { type: "zmwsk", value: this.oCbxTargetTaxCode.getValue() },
+          { type: "egrkz", value: this.oCbxEuCode.getValue() },
+          { type: "lstml", value: this.oCbxReportCountry.getValue() },
+          { type: "tolerance", value: this.oIptTolerance.getValue() }
+        );
+
+        try {
+          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+
+          this.oContainerTableDeferred.setVisible(false);
+          this.oContainerReviewTableDeferred.setVisible(false);
+
+          if (this.oResponse[0].status_code === "S") {
+            this.fnCheckTaxCode();
+            this.oStepConditionTypes.setValidated(true);
+            if (this.oResponse[0].auto_deftax === "X" && this.oResponse[0].deftax_scen === "X") {
+              this.oStepConditionTypes.setValidated(false);
+              this.oContainerTableDeferred.setVisible(true);
+              this.oContainerReviewTableDeferred.setVisible(true);
+            }
+          } else {
+            this.oStepTaxAttr.setValidated(false);
+            MessageBox.error(`${this.oResponse[0].status_message}`);
+          }
+
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+              <span>
+                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.checkDeferredTaxInfo}</a>
+              </span>
+            `
+          });
+        }
       },
 
       validateTaxAttr: function (oEvent) {
@@ -298,119 +525,37 @@ sap.ui.define(
         this.oStepTaxAttr.setValidated(false);
 
         // Make sure an item is chosen from the data list
-        Methods.fnSetValueStateField(oEvent, oEvent.getSource().mProperties.fieldStatus);
+        Methods.fnChangeValueState(oEvent);
 
-        let bValidated = Validations.fnValidStep3(this.oIptTaxCodeId, this.oIptTaxName, this.oCbxTaxJur, this.oCbxReportCountry, this.oCbxTargetTaxCode);
+        let bValidated = Validations.fnValidStep3(
+          this.oIptTaxCodeId, this.oIptTaxName,
+          this.oCbxTaxJur, this.oCbxReportCountry,
+          this.oCbxTargetTaxCode
+        );
 
-        if (bValidated && this.oIptTaxCodeId.getValue().length === 2) {
-          this.oStepTaxAttr.setValidated(bValidated);
+        if (bValidated) {
+          this.oBtnValidateTaxAttr.setVisible(true);
+        } else {
+          this.oBtnValidateTaxAttr.setVisible(false);
         }
       },
 
-      onCompleteTaxAttr: function () {
-        this.fnChangeStateOfControlsForTheStep(3, false);
+      onPressValidateTaxAttr: function () {
+        this.fnCheckDeferredTaxInfo();
+      },
+
+      completeTaxAttr: function () {
+        this.oBtnValidateTaxAttr.setVisible(false);
         this.oBtnBackToStep2.setVisible(false);
+        this.fnChangeStateOfControlsForTheStep(3, false);
 
-        this.sUrl = Methods.fnBuildUrl(
-          Constants._oUrlCodes.checkTaxCode,
-          { type: "land1", value: this.oCbxCountryKey.getValue() },
-          { type: "mwskz", value: this.oIptTaxCodeId.getValue() },
-          { type: "txjcd", value: this.oCbxTaxJur.getValue() }
-        );
-        Methods.fnGetAjax(this.sUrl).then((response) => {
-          const data = response[0];
-
-          if (data.status_code === "E") {
-            this.fnChangeStateOfControlsForTheStep(3, true);
-            this.oBtnBackToStep2.setVisible(true);
-            this.oWizard.previousStep();
-            MessageBox.error(data.status_message);
-          } else {
-            this.sUrl = Methods.fnBuildUrl(
-              Constants._oUrlCodes.getTaxProcedures,
-              { type: "land1", value: this.oCbxCountryKey.getValue() },
-              { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
-              { type: "scen", value: this.oCbxVatScenarios.getValue() }
-            );
-
-            Methods.fnGetAjax(this.sUrl).then((response) => {
-              if (response.success === "false") {
-                this.fnChangeStateOfControlsForTheStep(3, true);
-                this.oBtnBackToStep2.setVisible(true);
-                this.oWizard.previousStep();
-                MessageBox.error(response.msg);
-              } else {
-                this.oTableDefault.setModel(new JSONModel(response.data));
-
-                this.header = Methods.fnBuildHeaderData(
-                  this.oCbxCountryKey,
-                  this.oCbxTaxType,
-                  this.oIptTaxCodeId,
-                  this.oIptTaxName,
-                  this.oCbxTaxJur,
-                  this.oCbxVatScenarios,
-                  this.oChkCheckId,
-                  this.oCbxTargetTaxCode,
-                  this.oCbxEuCode,
-                  this.oCbxReportCountry,
-                  this.oIptTolerance,
-                  response.data[0]
-                );
-
-                this.sUrl = Methods.fnBuildUrl(
-                  Constants._oUrlCodes.checkDeferredTaxInfo,
-                  { type: "land1", value: this.header.land1 },
-                  { type: "kalsm", value: this.header.kalsm },
-                  { type: "mwart", value: this.header.mwart },
-                  { type: "mwskz", value: this.header.mwskz },
-                  { type: "mwskz_name", value: this.header.mwskz_name },
-                  { type: "txjcd", value: this.header.txjcd },
-                  { type: "scen", value: this.header.scen },
-                  { type: "pruef", value: this.header.pruef ? "X" : "" },
-                  { type: "zmwsk", value: this.header.zmwsk },
-                  { type: "egrkz", value: this.header.egrkz },
-                  { type: "lstml", value: this.header.lstml },
-                  { type: "tolerance", value: this.header.tolerance }
-                );
-
-                Methods.fnGetAjax(this.sUrl).then((data) => {
-                  console.log(data[0]);
-                  if (data[0].auto_deftax === "X" && data[0].deftax_scen === "X" && data[0].status_code !== "E") {
-                    this.oContainerTableDeferred.setVisible(true);
-                    this.oContainerReviewTableDeferred.setVisible(true);
-                  } else if (data[0].auto_deftax === "" && data[0].deftax_scen === "" && data[0].status_code === "S") {
-                    this.oStepTaxAttr.setValidated(false);
-                    this.oStepConditionTypes.setValidated(true);
-                    this.oContainerReviewTableDeferred.setVisible(false);
-                    this.oContainerTableDeferred.setVisible(false);
-                    this.fnChangeStateOfControlsForTheStep(3, true);
-                    this.oBtnBackToStep2.setVisible(true);
-                  } else {
-                    this.oStepTaxAttr.setValidated(false);
-                    this.oContainerReviewTableDeferred.setVisible(false);
-                    this.oContainerTableDeferred.setVisible(false);
-                    this.fnChangeStateOfControlsForTheStep(3, true);
-                    this.oBtnBackToStep2.setVisible(true);
-                    this.oWizard.previousStep();
-                    MessageBox.error(`${data[0].status_message}`);
-                  }
-                });
-              }
-            });
-
-            if (this.scenAdd !== "") {
-              this.sUrl = Methods.fnBuildUrl(
-                Constants._oUrlCodes.getTaxProcedures,
-                { type: "land1", value: this.oCbxCountryKey.getValue() },
-                { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
-                { type: "scen", value: this.scenAdd }
-              );
-              Methods.fnGetAjax(this.sUrl).then((response) => {
-                this.oTableDeferred.setModel(new JSONModel(response.data));
-              });
-            }
-          }
-        });
+        if (this.oMoreInfo.editableTable === "X") {
+          this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.MultiToggle);
+          this.oBtnDeleteTableDefault.setVisible(true);
+        } else {
+          this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.None);
+          this.oBtnDeleteTableDefault.setVisible(false);
+        }
       },
 
       onPressBackToVatScenarios: function () {
@@ -418,70 +563,60 @@ sap.ui.define(
         this.fnChangeStateOfControlsForTheStep(2, true);
 
         // Clear inputs for the current step, when you return to the previous step
-        // Show MessageBox here !!!!!!!
         this.fnClearInputsForStep(3);
+        this.oBtnValidateTaxAttr.setVisible(false);
 
         this.oWizard.previousStep();
         this.oBtnBackToStep1.setVisible(true);
       },
 
       // Step 4 --------------------------------------------
+      validateReceiverTaxName: function () {
+        this.oStepConditionTypes.setValidated(false);
+
+        if (this.oIptReceiverTaxName.getValue().length !== 0 && this.oIptReceiverTaxName.getValue().length >=4) {
+          this.oStepConditionTypes.setValidated(true);
+        } else {
+          this.oStepConditionTypes.setValidated(false);
+        }
+      },
+
+      fnOrderData: function () {
+        data = Methods.fnSetDataForReview(
+          this.oTableDefault, this.oTableReview,
+          this.oCbxCountryKey.getValue(), this.oTableDefault.getModel().oData[0].kalsm,
+          this.oCbxTaxType.getSelectedKey(), this.oIptTaxCodeId.getValue(),
+          this.oIptTaxName.getValue(), this.oCbxTaxJur.getValue(),
+          this.oCbxVatScenarios.getValue(), this.oChkCheckId.getSelected(),
+          this.oCbxTargetTaxCode.getValue(), this.oCbxEuCode.getValue(),
+          this.oCbxReportCountry.getValue(), this.oIptTolerance.getValue()
+        );
+
+        if (this.oMoreInfo.scenAdd !== "") {
+          data_tgt = Methods.fnSetDataForReview(
+            this.oTableDeferred, this.oTableReviewDeferred,
+            this.oCbxCountryKey.getValue(), this.oTableDeferred.getModel().oData[0].kalsm,
+            this.oCbxTaxType.getSelectedKey(), this.oCbxTargetTaxCode.getValue(),
+            this.oIptReceiverTaxName.getValue(), this.oCbxTaxJur.getValue(),
+            this.oMoreInfo.scenAdd, this.oChkCheckId.getSelected(),
+            "", this.oCbxEuCode.getValue(),
+            this.oCbxReportCountry.getValue(), this.oIptTolerance.getValue()
+          );
+        }
+      },
+
       onCompleteConditionTypes: function () {
         this.fnChangeStateOfControlsForTheStep(4, false);
         this.oBtnBackToStep3.setVisible(false);
 
-        this.aFinalDataPost = Methods.fnSetDataForReview(
-          this.oCbxCountryKey,
-          this.oCbxTaxType,
-          this.oIptTaxCodeId,
-          this.oIptTaxName,
-          this.oCbxTaxJur,
-          this.oCbxVatScenarios,
-          this.oChkCheckId,
-          this.oCbxTargetTaxCode,
-          this.oCbxEuCode,
-          this.oCbxReportCountry,
-          this.oIptTolerance,
-          this.oTableDefault,
-          this.oTableReview
-        );
+        this.fnOrderData();
 
-        this.aFinalDataPostTgt = {}
+        this.oStepReviewAll.setModel(new JSONModel(data.header));
+        this.oTableReview.setModel(new JSONModel(data.schema));
+        this.oTableReviewDeferred.setModel(new JSONModel(data_tgt));
 
-        if (this.scenAdd !== "") {
-          this.aFinalDataPostTgt = Methods.fnSetDataForReviewDeferred(
-            this.oCbxCountryKey.getValue(),
-            this.oCbxTaxType.getSelectedKey(),
-            this.oCbxTargetTaxCode.getValue(),
-            this.oIptReceiverTaxName.getValue(),
-            this.oCbxTaxJur.getValue(),
-            this.scenAdd,
-            this.oChkCheckId.getSelected(),
-            "",
-            this.oCbxEuCode.getValue(),
-            this.oCbxReportCountry.getValue(),
-            this.oIptTolerance.getValue(),
-            this.oTableDeferred,
-            this.oTableReviewDeferred
-          );
-        }
-        console.log(this.aFinalDataPost);
-        console.log(this.aFinalDataPostTgt);
-
-        this.oStepReviewAll.setModel(new JSONModel(this.aFinalDataPost));
-        this.oTableReviewDeferred.setModel(new JSONModel(this.aFinalDataPostTgt));
-
+        this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.None);
         this.oBtnDeleteTableDefault.setVisible(false);
-      },
-
-      validateReceiverTaxName: function () {
-        this.oStepConditionTypes.setValidated(false);
-
-        if (this.oIptReceiverTaxName.getValue().length === 0) {
-          this.oStepConditionTypes.setValidated(false);
-        } else {
-          this.oStepConditionTypes.setValidated(true);
-        }
       },
 
       onPressBackToStepTaxAttr: function () {
@@ -492,10 +627,11 @@ sap.ui.define(
         // Show MessageBox here !!!!!!!
         this.fnClearInputsForStep(4);
 
-        this.oStepTaxAttr.setValidated(true);
+        this.oStepTaxAttr.setValidated(false);
 
         this.oWizard.previousStep();
         this.oBtnBackToStep2.setVisible(true);
+        this.oBtnValidateTaxAttr.setVisible(true);
       },
 
       onPressDeleteConditionTypes: function () {
@@ -503,8 +639,6 @@ sap.ui.define(
         let indices = oTable.getSelectedIndices();
         let tableData = oTable.getModel().oData;
         let model;
-
-        console.log(indices, tableData);
 
         if (tableData.length > indices.length) {
           indices
@@ -514,6 +648,7 @@ sap.ui.define(
               tableData.splice(index, 1);
             });
           model = new JSONModel(tableData);
+          this.oTableDefault.mProperties.visibleRowCount = tableData.length;
           this.oTableDefault.setModel(model);
         }
       },
@@ -525,7 +660,12 @@ sap.ui.define(
         this.oWizard.previousStep();
         this.oBtnBackToStep3.setVisible(true);
 
-        this.oBtnDeleteTableDefault.setVisible(true);
+        if (this.oMoreInfo.editableTable === "X") {
+          this.oBtnDeleteTableDefault.setVisible(true);
+          this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.MultiToggle);
+        } else {
+          this.oBtnDeleteTableDefault.setVisible(false);
+        }
       },
 
       onComplete: function () {
@@ -533,12 +673,10 @@ sap.ui.define(
           function (oBusyDialog) {
             oBusyDialog.open(); // Open busy dialog when Submit button is clicked
 
-            let data = this.aFinalDataPost, data_tgt = this.aFinalDataPostTgt
-
             this.final_data = {
               data,
-              data_tgt
-            }
+              data_tgt,
+            };
 
             this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.postCreateTaxCode);
             fetch(this.sUrl, {
@@ -553,10 +691,8 @@ sap.ui.define(
                 // After a successful creation, the busy dialog closes and
                 // displays a MessageBox indicating that it has been created and the transport code.
 
-                console.log(data);
-
                 if (data[0].status_code === "S") {
-                  MessageBox.success(`The tax code has been created successfully`, {
+                  MessageBox.success("The tax code has been created successfully", {
                     actions: [MessageBox.Action.OK],
                     onClose: function (sAction) {
                       if (sAction === "OK") {

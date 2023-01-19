@@ -22,147 +22,87 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       return url;
     },
 
-    fnSetValueStateField: function (oEvent, ...aFieldStatus) {
-      const oValidatedField = oEvent.getSource();
-      const sValue = this.fnRemoveSpaces(oValidatedField.getValue().toString());
-      const status = aFieldStatus[0];
-      const controlType = oValidatedField.getMetadata().getName();
+    fnSetMandatoryField: function (oControl) {
+      oControl.setValueState(Constants.oValueState.Error);
+      oControl.setValueStateText("Mandatory field");
+    },
+
+    fnChangeValueState: function (oEvent) {
+      const oField = oEvent.getSource();
+      const sFieldValue = this.fnRemoveSpaces(oField.getValue().toString());
+      const bRequiredField = oField.mProperties.required;
+      const sFieldType = oField.getMetadata().getName();
       let sSelectedKey = "";
-      oValidatedField.setValueState(Constants.oValueState.Error);
-      if (controlType === "sap.m.ComboBox") {
-        sSelectedKey = oValidatedField.getSelectedKey();
-      }
-      if ((status === "R" || status === undefined) && sValue.length === 0) {
-        oValidatedField.setValueStateText("Mandatory field, don't leave empty");
-      } else if (controlType === "sap.m.ComboBox" && !sSelectedKey && sValue && oValidatedField.sId !== "container-taco---app--cbx-target-tax-code") {
-        oValidatedField.setValueStateText("Select an item from the list");
-        if (status === "O") {
-          oValidatedField.setValueStateText("Select an item from the list or leave empty");
-          oValidatedField.setValueState(Constants.oValueState.Warning);
+
+      if (sFieldType === "sap.m.ComboBox")
+        sSelectedKey = oField.getSelectedKey();
+
+      if (sFieldValue === "" && bRequiredField) {
+        this.fnSetMandatoryField(oField);
+      } else if (
+        sFieldType === "sap.m.ComboBox" && !sSelectedKey &&
+        sFieldValue && oField.sId !== "container-taco---app--cbx-target-tax-code"
+      ) {
+        oField.setValueState(Constants.oValueState.Error);
+        oField.setValueStateText("Select an item from the list");
+
+        if (!bRequiredField) {
+          oField.setValueStateText("Select an item from the list or leave empty");
+          oField.setValueState(Constants.oValueState.Warning);
         }
       } else {
-        oValidatedField.setValueState(Constants.oValueState.None);
+        oField.setValueState(Constants.oValueState.None);
       }
     },
 
-    fnGetAjax: (sUrl) => {
-      return new Promise((resolve, reject) => {
-        $.ajax({
-          url: sUrl,
-          crossDomain: true,
-          type: "GET",
-          success: function (response) {
-            resolve(response);
-          },
-          error: function (error) {
-            reject(error);
-          },
-        });
-      });
-    },
+    fnCheckFieldStatus: function (oThis, aData) {
+      this.fnSetMandatoryField(oThis.oIptTaxName);
 
-    fnBuildHeaderData: function (...aFields) {
-      let headerData = {
-        land1: aFields[0].getValue(),
-        kalsm: aFields[11].kalsm,
-        mwart: aFields[1].getSelectedKey(),
-        mwskz: aFields[2].getValue(),
-        mwskz_name: aFields[3].getValue(),
-        txjcd: aFields[4].getValue(),
-        scen: aFields[5].getValue(),
-        pruef: aFields[6].getSelected(),
-        zmwsk: aFields[7].getValue(),
-        egrkz: aFields[8].getValue(),
-        lstml: aFields[9].getValue(),
-        tolerance: aFields[10].getValue(),
-      };
-      return headerData;
-    },
+      aData.forEach((oFieldData) => {
+        const oField = oThis.byId(`field-${oFieldData.fieldname}`);
 
-    fnSetDataForReview: function (...aFields) {
-      let schemaData = [],
-        headerData = {
-          land1: aFields[0].getValue(),
-          kalsm: "",
-          mwart: aFields[1].getSelectedKey(),
-          mwskz: aFields[2].getValue(),
-          mwskz_name: aFields[3].getValue(),
-          txjcd: aFields[4].getValue(),
-          scen: aFields[5].getValue(),
-          pruef: aFields[6].getSelected(),
-          zmwsk: aFields[7].getValue(),
-          egrkz: aFields[8].getValue(),
-          lstml: aFields[9].getValue(),
-          tolerance: aFields[10].getValue(),
-        };
+        if (oField) {
+          oField.setVisible((oFieldData.scr_status === "S") ? false : true);
 
-      aFields[11].getRows().forEach((row) => {
-        const schemaTemp = {
-          kschl: row.getCells()[0].getText(),
-          vtext: row.getCells()[1].getText(),
-          kalsm: row.getCells()[2].getText(),
-          stunr: row.getCells()[3].getText(),
-          kvsl1: row.getCells()[4].getText(),
-          kbetr: row.getCells()[5].getValue(),
-        };
+          if (oFieldData.fieldname === "CHECKID" && oFieldData.default_value === "X")
+            oField.mAggregations.content[1].setSelected(true);
 
-        if (schemaTemp.kschl) {
-          headerData.kalsm = schemaTemp.kalsm;
-          schemaData.push(schemaTemp);
+          const inputProperties = oField.mAggregations.content[1].mProperties;
+          inputProperties.required = oFieldData.scr_status === "R" ? true : false;
+
+          if (inputProperties.required) {
+            this.fnSetMandatoryField(oField.mAggregations.content[1]);
+          } else {
+            oField.mAggregations.content[1].setValueState(Constants.oValueState.None);
+          }
         }
       });
-
-      let aFinalData = {
-        header: headerData,
-        schema: schemaData,
-      };
-
-      aFields[12].mProperties.visibleRowCount = aFinalData.schema.length;
-
-      return aFinalData;
     },
 
-    fnSetDataForReviewDeferred: function (...aFields) {
-      let schemaData = [],
-        headerData = {
-          land1: aFields[0], // countryKey
-          kalsm: "",
-          mwart: aFields[1], // taxType
-          mwskz: aFields[2], // targetTaxCode
-          mwskz_name: aFields[3], // receiverTaxName
-          txjcd: aFields[4], // taxJurisdiction
-          scen: aFields[5], // scen.add
-          pruef: aFields[6], // checkID
-          zmwsk: aFields[7], // este debe estar vacio
-          egrkz: aFields[8], //
-          lstml: aFields[9], // MISMO countryKey
-          tolerance: aFields[10], // new tolerance
-        };
+    fnSetDataForReview: function (oTable, oTableReview, ...aFields) {
+      let oHeaderData = {}, aSchemaData = [];
 
-      aFields[11].getRows().forEach((row) => {
-        const schemaTemp = {
-          kschl: row.getCells()[0].getText(),
-          vtext: row.getCells()[1].getText(),
-          kalsm: row.getCells()[2].getText(),
-          stunr: row.getCells()[3].getText(),
-          kvsl1: row.getCells()[4].getText(),
-          kbetr: row.getCells()[5].getValue(),
-        };
-
-        if (schemaTemp.kschl) {
-          headerData.kalsm = schemaTemp.kalsm;
-          schemaData.push(schemaTemp);
-        }
-      });
-
-      let aFinalData = {
-        header: headerData,
-        schema: schemaData,
+      oHeaderData = {
+        land1: aFields[0], kalsm: aFields[1], mwart: aFields[2],
+        mwskz: aFields[3], mwskz_name: aFields[4], txjcd: aFields[5],
+        scen: aFields[6], pruef: aFields[7], zmwsk: aFields[8],
+        egrkz: aFields[9], lstml: aFields[10], tolerance: aFields[11]
       };
 
-      aFields[12].mProperties.visibleRowCount = aFinalData.schema.length;
+      oTable.getRows().forEach((row) => {
+        if (row.getCells()[0].getText())
+          aSchemaData.push({
+            kschl: row.getCells()[0].getText(), vtext: row.getCells()[1].getText(), kalsm: row.getCells()[2].getText(),
+            stunr: row.getCells()[3].getText(), kvsl1: row.getCells()[4].getText(), kbetr: row.getCells()[5].getValue(),
+          });
+      });
 
-      return aFinalData;
+      oTableReview.mProperties.visibleRowCount = oTable.getModel().oData.length;
+
+      return {
+        header: oHeaderData,
+        schema: aSchemaData,
+      };
     },
   };
 });

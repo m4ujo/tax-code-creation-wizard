@@ -3,7 +3,7 @@
   xmlns:form="sap.ui.layout.form"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc">
-  <WizardStep id="step-tax-properties" title="{i18n>step1Title}" activate="onInitTaxProperties" validated="false" complete="onCompleteTaxProperties">
+  <WizardStep id="step-tax-properties" title="{i18n>step1Title}" activate="initTaxProperties" validated="false" complete="completeTaxProperties">
     <form:SimpleForm editable="true" class="flex">
       <html:div class="form-row">
         <Label text="{i18n>lblCountryKey}" labelFor="cbx-country-key"/>

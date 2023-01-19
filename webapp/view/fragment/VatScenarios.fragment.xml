@@ -3,11 +3,11 @@
   xmlns:form="sap.ui.layout.form"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc">
-  <WizardStep id="step-vat-scenarios" title="{i18n>step2Title}" validated="false" activate="onActivateStepVatScenarios" complete="onCompleteVatScenarios">
+  <WizardStep id="step-vat-scenarios" title="{i18n>step2Title}" validated="false" activate="initVatScenarios" complete="completeVatScenarios">
     <form:SimpleForm editable="true">
       <html:div class="form-row">
         <Label text="{i18n>lblVatScenario}" labelFor="cbx-vat-scenarios" />
-        <ComboBox id="cbx-vat-scenarios" required="true" change="searchFieldStatus" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'scen' } }">
+        <ComboBox id="cbx-vat-scenarios" required="true" change="validateVatScenarios" showSecondaryValues="true" items="{ path: '/', sorter: { path: 'scen' } }">
           <core:ListItem key="{scen}" text="{scen}" additionalText="{scen_desc}" />
         </ComboBox>
       </html:div>
