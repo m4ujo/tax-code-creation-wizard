@@ -127,6 +127,15 @@ sap.ui.define(
           this.oCbxTargetTaxCode.setValue("");
           this.oCbxTargetTaxCode.setSelectedKey("");
           this.oIptTolerance.setValue(0.0);
+        } else if (iStep === 4) {
+          this.oTableDefault.getRows().forEach((x) => {
+            x.getCells()[5].setValue(0);
+          });
+          if (this.oMoreInfo.scenAdd !== "") {
+            this.oTableDeferred.getRows().forEach((x) => {
+              x.getCells()[5].setValue(0);
+            });
+          }
         }
       },
 

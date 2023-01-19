@@ -83,11 +83,13 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       let oHeaderData = {}, aSchemaData = [];
 
       oHeaderData = {
-        land1: aFields[0], kalsm: aFields[1], mwart: aFields[2],
-        mwskz: aFields[3], mwskz_name: aFields[4], txjcd: aFields[5],
-        scen: aFields[6], pruef: aFields[7], zmwsk: aFields[8],
-        egrkz: aFields[9], lstml: aFields[10], tolerance: aFields[11]
+        land1: aFields[0].toUpperCase(), kalsm: aFields[1], mwart: aFields[2],
+        mwskz: aFields[3].toUpperCase(), mwskz_name: aFields[4], txjcd: aFields[5].toUpperCase(),
+        scen: aFields[6].toUpperCase(), pruef: aFields[7], zmwsk: aFields[8].toUpperCase(),
+        egrkz: aFields[9].toUpperCase(), lstml: aFields[10].toUpperCase(), tolerance: aFields[11]
       };
+
+      console.log(oHeaderData);
 
       oTable.getRows().forEach((row) => {
         if (row.getCells()[0].getText())
