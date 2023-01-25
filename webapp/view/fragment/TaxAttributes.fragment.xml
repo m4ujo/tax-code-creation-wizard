@@ -14,7 +14,7 @@
 
         <l:HorizontalLayout id="field-TAXNAME" class="form-row">
           <Label text="{i18n>lblTaxName}" labelFor="input-tax-name" />
-          <Input id="input-tax-name" width="100%" class="input" required="true" liveChange="validateTaxAttr" placeholder="4 characters minimum" />
+          <Input id="input-tax-name" width="100%" class="input" required="true" maxLength="90" liveChange="validateTaxAttr" placeholder="4 characters minimum" />
         </l:HorizontalLayout>
       </html:div>
 
