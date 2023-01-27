@@ -6,15 +6,18 @@
   "scripts": {
     "start": "ui5 serve",
     "build": "ui5 build",
-    "eslint:conf": "eslint --init"
+    "eslint:conf": "eslint --init",
+    "docs": "jsdoc -c jsdoc.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ui5/cli": "^2.14.17"
+    "@ui5/cli": "^2.14.17",
+    "jsdoc-http-plugin": "^0.3.2"
   },
   "devDependencies": {
-    "eslint": "^8.32.0"
+    "eslint": "^8.32.0",
+    "jsdoc": "4.0.0"
   }
 }

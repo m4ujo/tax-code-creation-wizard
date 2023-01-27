@@ -1,12 +1,27 @@
 sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
   "use strict";
   return {
+    /**
+     * Remove white spaces of string
+     * @function
+     * @name fnRemoveSpaces
+     * @param {String} str String for remove spaces
+     * @returns {String} string whitout spaces
+     */
     fnRemoveSpaces: (str) => {
       return str.replace(Constants._rSpaces, "");
     },
 
+    /**
+     * Build URL with code and params
+     * @function
+     * @name fnBuildUrl
+     * @param {String} sCode
+     * @param  {Array} aParams
+     * @returns {String} Final URL
+     */
     fnBuildUrl: (sCode, ...aParams) => {
-      let url = `${Constants._oDomain}/pg_itx?sap-client=400&code=${sCode}`;
+      let url = `${Constants._sDomain}/pg_itx?sap-client=400&code=${sCode}`;
 
       if (aParams) {
         aParams.forEach((param) => {
@@ -22,11 +37,23 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       return url;
     },
 
+    /**
+     * Make mandatory field
+     * @function
+     * @name fnSetMandatoryField
+     * @param {Object} oControl
+     */
     fnSetMandatoryField: function (oControl) {
       oControl.setValueState(Constants.oValueState.Error);
       oControl.setValueStateText("Mandatory field");
     },
 
+    /**
+     * When a control receive an event, change the value state and message showed
+     * @function
+     * @name fnChangeValueState
+     * @param {Object} oEvent
+     */
     fnChangeValueState: function (oEvent) {
       const oField = oEvent.getSource();
       const sFieldValue = this.fnRemoveSpaces(oField.getValue().toString());
@@ -34,15 +61,11 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       const sFieldType = oField.getMetadata().getName();
       let sSelectedKey = "";
 
-      if (sFieldType === "sap.m.ComboBox")
-        sSelectedKey = oField.getSelectedKey();
+      if (sFieldType === "sap.m.ComboBox") sSelectedKey = oField.getSelectedKey();
 
       if (sFieldValue === "" && bRequiredField) {
         this.fnSetMandatoryField(oField);
-      } else if (
-        sFieldType === "sap.m.ComboBox" && !sSelectedKey &&
-        sFieldValue && oField.sId !== "container-taco---app--cbx-target-tax-code"
-      ) {
+      } else if (sFieldType === "sap.m.ComboBox" && !sSelectedKey && sFieldValue && oField.sId !== "container-taco---app--cbx-target-tax-code") {
         oField.setValueState(Constants.oValueState.Error);
         oField.setValueStateText("Select an item from the list");
 
@@ -55,6 +78,13 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       }
     },
 
+    /**
+     * Check status of fields on thir step
+     * @function
+     * @name fnCheckFieldStatus
+     * @param {Object} oThis
+     * @param {Object} aData
+     */
     fnCheckFieldStatus: function (oThis, aData) {
       this.fnSetMandatoryField(oThis.oIptTaxName);
 
@@ -62,10 +92,9 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
         const oField = oThis.byId(`field-${oFieldData.fieldname}`);
 
         if (oField) {
-          oField.setVisible((oFieldData.scr_status === "S") ? false : true);
+          oField.setVisible(oFieldData.scr_status === "S" ? false : true);
 
-          if (oFieldData.fieldname === "CHECKID" && oFieldData.default_value === "X")
-            oField.mAggregations.content[1].setSelected(true);
+          if (oFieldData.fieldname === "CHECKID" && oFieldData.default_value === "X") oField.mAggregations.content[1].setSelected(true);
 
           const inputProperties = oField.mAggregations.content[1].mProperties;
           inputProperties.required = oFieldData.scr_status === "R" ? true : false;
@@ -79,14 +108,32 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       });
     },
 
+    /**
+     * Order all data and set table data on schema array
+     * @function
+     * @name fnSetDataForReview
+     * @param {Object} oTable
+     * @param {Object} oTableReview
+     * @param  {Array} aFields
+     * @returns {Object} Header and schema data
+     */
     fnSetDataForReview: function (oTable, oTableReview, ...aFields) {
-      let oHeaderData = {}, aSchemaData = [];
+      let oHeaderData = {},
+        aSchemaData = [];
 
       oHeaderData = {
-        land1: aFields[0].toUpperCase(), kalsm: aFields[1], mwart: aFields[2],
-        mwskz: aFields[3].toUpperCase(), mwskz_name: aFields[4], txjcd: aFields[5].toUpperCase(),
-        scen: aFields[6].toUpperCase(), pruef: aFields[7], zmwsk: aFields[8].toUpperCase(),
-        egrkz: aFields[9].toUpperCase(), lstml: aFields[10].toUpperCase(), tolerance: aFields[11]
+        land1: aFields[0].toUpperCase(),
+        kalsm: aFields[1],
+        mwart: aFields[2],
+        mwskz: aFields[3].toUpperCase(),
+        mwskz_name: aFields[4],
+        txjcd: aFields[5].toUpperCase(),
+        scen: aFields[6].toUpperCase(),
+        pruef: aFields[7],
+        zmwsk: aFields[8].toUpperCase(),
+        egrkz: aFields[9].toUpperCase(),
+        lstml: aFields[10].toUpperCase(),
+        tolerance: aFields[11],
       };
 
       console.log(oHeaderData);
@@ -94,8 +141,12 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
       oTable.getRows().forEach((row) => {
         if (row.getCells()[0].getText())
           aSchemaData.push({
-            kschl: row.getCells()[0].getText(), vtext: row.getCells()[1].getText(), kalsm: row.getCells()[2].getText(),
-            stunr: row.getCells()[3].getText(), kvsl1: row.getCells()[4].getText(), kbetr: row.getCells()[5].getValue(),
+            kschl: row.getCells()[0].getText(),
+            vtext: row.getCells()[1].getText(),
+            kalsm: row.getCells()[2].getText(),
+            stunr: row.getCells()[3].getText(),
+            kvsl1: row.getCells()[4].getText(),
+            kbetr: row.getCells()[5].getValue(),
           });
       });
 

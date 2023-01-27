@@ -1,14 +1,14 @@
 sap.ui.define(
-  ['sap/ui/core/ComponentContainer'],
+  ["sap/ui/core/ComponentContainer"],
   function (ComponentContainer) {
-    'use strict'
+    "use strict";
 
     new ComponentContainer({
-      name: 'taco',
+      name: "taco",
       settings: {
-        id: 'taco'
+        id: "taco"
       },
       async: true
-    }).placeAt('content')
+    }).placeAt("content");
   }
-)
+);

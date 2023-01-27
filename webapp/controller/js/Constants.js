@@ -1,12 +1,31 @@
 sap.ui.define(["sap/ui/core/library"], function (coreLibrary) {
   "use strict";
   return {
+    /**
+     * Value state object
+     * @type { Object }
+     */
     oValueState: coreLibrary.ValueState,
 
-    _oDomain: "https://usalspgsa660.na.pg.com:8443",
+    /**
+     * Domain of API server
+     * @type { String }
+     * @private
+     */
+    _sDomain: "https://usalspgsa660.na.pg.com:8443",
 
+    /**
+     * Regex for white spaces
+     * @type { RegExp }
+     * @private
+     */
     _rSpaces: /\s/g,
 
+    /**
+     * Request URL codes
+     * @type { Object }
+     * @private
+     */
     _oUrlCodes: {
       getTaxCountry: "GET_TAX_COUNTRY_LIST",
       getTaxType: "GET_TAX_TYPES_LIST",
@@ -20,7 +39,7 @@ sap.ui.define(["sap/ui/core/library"], function (coreLibrary) {
       checkTaxCode: "CHECK_TAX_CODE",
       postCreateTaxCode: "POST_CREATE_TAX_CODE",
       validateReturnCountry: "VALIDATE_RETURN_COUNTRY",
-      checkDeferredTaxInfo: "CHECK_DEFERRED_TAX_INFO"
+      checkDeferredTaxInfo: "CHECK_DEFERRED_TAX_INFO",
     },
   };
 });

@@ -13,9 +13,16 @@ sap.ui.define(
   function (Controller, Fragment, syncStyleClass, JSONModel, MessageBox, MessageToast, Methods, Constants, Validations) {
     "use strict";
 
-    let data = {}, data_tgt = {};
+    let data = {},
+      data_tgt = {};
 
     return Controller.extend("taco.controller.App", {
+      /**
+       * Get all elements of the views by ID
+       * Init busy dialog for the final step
+       * @function
+       * @name onInit
+       */
       onInit: function () {
         // Get elements by ID
         this.oWizard = this.byId("taco-wizard");
@@ -80,7 +87,15 @@ sap.ui.define(
         }
       },
 
-      fnChangeStateOfControlsForTheStep: function (iStep, bState) {
+      /**
+       * Get all elements of the views by ID
+       * Init busy dialog for the final step
+       * @function
+       * @name fnChangeStateOfControl
+       * @param {Number} iStep Wizard step number
+       * @param {Boolean} bState Boolean param for disable and enable controls
+       */
+      fnChangeStateOfControl: function (iStep, bState) {
         if (iStep === 1) {
           this.oCbxCountryKey.setEnabled(bState);
           this.oCbxTaxType.setEnabled(bState);
@@ -106,7 +121,14 @@ sap.ui.define(
         }
       },
 
-      fnClearInputsForStep: function (iStep) {
+      /**
+       * Get all elements of the views by ID
+       * Init busy dialog for the final step
+       * @function
+       * @name fnClearInputs
+       * @param {Number} iStep Wizard step number
+       */
+      fnClearInputs: function (iStep) {
         if (iStep === 1) {
           this.oCbxCountryKey.setValue("");
           this.oCbxCountryKey.setSelectedKey("");
@@ -140,15 +162,18 @@ sap.ui.define(
       },
 
       /**
-       * Get countries, requesting data from the server
+       * Get data from request URL: Countries
+       * Put data in the combobox that corresponds to the country selection
        * @function
        * @name fnGetCountries
        */
       fnGetCountries: async function () {
-        // Get data from request URL: Countries
+        // Build URL for request data
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCountry);
+
+        // If no exceptions are found, request the data and put a new model in this.oCbxCountry
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
           this.oCbxCountryKey.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -156,21 +181,21 @@ sap.ui.define(
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxCountry}</a>
               </span>
-            `
+            `,
           });
         }
       },
 
       /**
-       * Get countries, requesting data from the server
+       * Get data from request URL: Tax Types
+       * Put data in the combobox that corresponds to the tax type selection
        * @function
        * @name fnGetTaxTypes
        */
       fnGetTaxTypes: async function () {
-        // Get data from request URL: Tax Types
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxType);
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
           this.oCbxTaxType.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -178,57 +203,13 @@ sap.ui.define(
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxType}</a>
               </span>
-            `
+            `,
           });
         }
       },
 
       /**
-       * Request for data from countries
-       * @function
-       * @name fnGetReportingCountries
-       */
-      fnGetReportingCountries: async function () {
-        // Get data from request URL: Reporting countries
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getReportCountries);
-        try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
-          this.oCbxReportCountry.setModel(new JSONModel(this.oResponse.data));
-        } catch (error) {
-          MessageBox.error("Server cannot respond to the request.", {
-            details: `
-              <span>
-                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getReportCountries}</a>
-              </span>
-            `
-          });
-        }
-      },
-
-      /**
-       * Request for data from countries
-       * @function
-       * @name fnGetEuCodes
-       */
-      fnGetEuCodes: async function () {
-        // Get data from request URL: EU Codes
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getEuCodes);
-        try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
-          this.oCbxEuCode.setModel(new JSONModel(this.oResponse.data));
-        } catch (error) {
-          MessageBox.error("Server cannot respond to the request.", {
-            details: `
-              <span>
-                <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getEuCodes}</a>
-              </span>
-            `
-          });
-        }
-      },
-
-      /**
-       * Set fields as required and request data
+       * Set fields as required and make queries that don't require parameters
        * @function
        * @name initTaxProperties
        */
@@ -238,23 +219,28 @@ sap.ui.define(
 
         this.fnGetCountries();
         this.fnGetTaxTypes();
-        this.fnGetReportingCountries();
-        this.fnGetEuCodes();
       },
 
+      /**
+       * Get data from request URL: VAT Scenarios
+       * Put data in the combobox that corresponds to the VAT Scenarios selection
+       * @function
+       * @name fnGetVatScenarios
+       */
       fnGetVatScenarios: async function () {
-        // Get data from request URL: VAT Scenarios
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxScenarios,
+        this.sUrl = Methods.fnBuildUrl(
+          Constants._oUrlCodes.getTaxScenarios,
           { type: "land1", value: this.oCbxCountryKey.getValue() },
           { type: "mwart", value: this.oCbxTaxType.getSelectedKey() }
         );
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
 
           if (this.oResponse.data.length === 0) {
             MessageBox.error("No scenarios were found, for the entered values.");
           } else {
             this.oCbxVatScenarios.setModel(new JSONModel(this.oResponse.data));
+            // Show next step button
             this.oStepTaxProperties.setValidated(true);
           }
         } catch (error) {
@@ -263,43 +249,60 @@ sap.ui.define(
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxScenarios}</a>
               </span>
-            `
+            `,
           });
           this.oStepTaxProperties.setValidated(false);
         }
-
       },
 
+      /**
+       * Override step by default
+       * Validate field state
+       * Validate content of the inputs
+       * @function
+       * @name validateTaxProperties
+       * @param {Object} oEvent Event object of control
+       */
       validateTaxProperties: function (oEvent) {
-        // Override step by default
         this.oStepTaxProperties.setValidated(false);
 
-        // Make sure an item is chosen from the data list
         Methods.fnChangeValueState(oEvent);
 
-        // Validate
         if (Validations.fnValidStep1(this.oCbxCountryKey, this.oCbxTaxType)) {
           this.fnGetVatScenarios();
         }
       },
 
+      /**
+       * When the first step is finished
+       * Disable controls for first step
+       * @function
+       * @name completeTaxProperties
+       */
       completeTaxProperties: function () {
-        // When the step is finished, disable all controls
-        this.fnChangeStateOfControlsForTheStep(1, false);
+        this.fnChangeStateOfControl(1, false);
       },
 
-      // Step 2 --------------------------------------------
+      /**
+       * Set fields as required
+       * @function
+       * @name initVatScenarios
+       */
       initVatScenarios: function () {
         // Set the status value to error
         Methods.fnSetMandatoryField(this.oCbxVatScenarios);
       },
 
+      /**
+       * Get flags from master country table
+       * @function
+       * @name fnGetMoreInfo
+       */
       fnGetMoreInfo: function () {
         let sAutoDeftax = "";
 
         this.oCbxCountryKey.getModel().oData.forEach((oCountry) => {
-          if (oCountry.land1 === this.oCbxCountryKey.getValue())
-            sAutoDeftax = oCountry.auto_deftax;
+          if (oCountry.land1 === this.oCbxCountryKey.getValue()) sAutoDeftax = oCountry.auto_deftax;
         });
 
         this.oCbxVatScenarios.getModel().oData.forEach((oScenario) => {
@@ -308,20 +311,29 @@ sap.ui.define(
               scenAdd: oScenario.scen_add,
               deftaxScen: oScenario.deftax_scen,
               autoDeftax: sAutoDeftax,
-              editableTable: oScenario.allw_excl_kschl
+              editableTable: oScenario.allw_excl_kschl,
             };
         });
       },
 
+      /**
+       * Get data from request URL: Condition Types
+       * Put data in the table that corresponds to the Condition Types
+       * Put data in the table that corresponds to the Condition Types Deferred
+       * @function
+       * @name fnGetConditionTypes
+       * @param {String} sScenario To identify if the deferred tax table should be displayed
+       */
       fnGetConditionTypes: async function (sScenario) {
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxProcedures,
+        this.sUrl = Methods.fnBuildUrl(
+          Constants._oUrlCodes.getTaxProcedures,
           { type: "land1", value: this.oCbxCountryKey.getValue() },
           { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
           { type: "scen", value: sScenario }
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
 
           if (this.oResponse.data.length === 0) {
             MessageBox.error("Condition types not found, for the entered scenario.");
@@ -341,21 +353,28 @@ sap.ui.define(
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxScenarios}</a>
               </span>
-            `
+            `,
           });
           this.oStepVatScenarios.setValidated(false);
         }
       },
 
+      /**
+       * Get data from request URL: Check field status
+       * The data collected is to evaluate if a field from step 3 is mandatory or optional
+       * @function
+       * @name fnGetFieldStatus
+       */
       fnGetFieldStatus: async function () {
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxFieldstatus,
+        this.sUrl = Methods.fnBuildUrl(
+          Constants._oUrlCodes.getTaxFieldstatus,
           { type: "land1", value: this.oCbxCountryKey.getValue() },
           { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
           { type: "scen", value: this.oCbxVatScenarios.getValue() }
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
 
           if (this.oResponse.data.length === 0) {
             MessageBox.error("Fieldstatus not found, for the entered scenario.");
@@ -369,17 +388,23 @@ sap.ui.define(
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxFieldstatus}</a>
               </span>
-            `
+            `,
           });
           this.oStepVatScenarios.setValidated(false);
         }
       },
 
+      /**
+       * Override step by default
+       * Validate field state
+       * Validate content of the inputs
+       * @function
+       * @name validateVatScenarios
+       * @param {Object} oEvent Event object of control
+       */
       validateVatScenarios: function (oEvent) {
-        // Set the step validation status to FALSE by default
         this.oStepVatScenarios.setValidated(false);
 
-        // Make sure an item is chosen from the data list
         Methods.fnChangeValueState(oEvent);
 
         if (Validations.fnValidStep2(this.oCbxVatScenarios)) {
@@ -391,29 +416,44 @@ sap.ui.define(
         }
       },
 
+      /**
+       * When the step 2 is completed
+       * Disable controls for second step
+       * Make button for back to first step invisible
+       * Check field status
+       * @function
+       * @name completeVatScenarios
+       */
       completeVatScenarios: function () {
-        this.fnChangeStateOfControlsForTheStep(2, false);
+        this.fnChangeStateOfControl(2, false);
         this.oBtnBackToStep1.setVisible(false);
         Methods.fnCheckFieldStatus(this, this.aFieldStatus);
       },
 
+      /**
+       * When you return to the previous step
+       * Enable all controls for first step
+       * Clear inputs for second step
+       * @function
+       * @name onPressBackToTaxProperties
+       */
       onPressBackToTaxProperties: function () {
-        // When you return to the previous step, enable all controls
-        this.fnChangeStateOfControlsForTheStep(1, true);
-
-        // Clear inputs for the current step, when you return to the previous step
-        this.fnClearInputsForStep(2);
-
+        this.fnChangeStateOfControl(1, true);
+        this.fnClearInputs(2);
         this.oWizard.previousStep();
       },
 
-      // Step 3 --------------------------------------------
-
+      /**
+       * Get data from request URL: Tax Jurisdiction
+       * Put data in the combobox that corresponds to the Tax Jurisdiction selection
+       * @function
+       * @name fnGetTaxJurisdiction
+       */
       fnGetTaxJurisdiction: async function () {
-        // Get data from request URL: Tax Jurisdiction
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxJur, { type: "land1", value: this.oCbxCountryKey.getValue() });
+
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
           this.oCbxTaxJur.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -421,15 +461,21 @@ sap.ui.define(
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxJur}</a>
               </span>
-            `
+            `,
           });
         }
       },
 
+      /**
+       * Get data from request URL: Target Tax Codes
+       * Put data in the combobox that corresponds to the Target Tax Codes selection
+       * @function
+       * @name fnGetTaxCodes
+       */
       fnGetTaxCodes: async function () {
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCodes, { type: "land1", value: this.oCbxCountryKey.getValue() });
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
           this.oCbxTargetTaxCode.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -437,25 +483,82 @@ sap.ui.define(
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getTaxCodes}</a>
               </span>
-            `
+            `,
           });
         }
       },
 
+      /**
+       * Get data from request URL: Reporting countries
+       * Put data in the combobox that corresponds to the reporting countries selection
+       * @function
+       * @name fnGetReportingCountries
+       */
+      fnGetReportingCountries: async function () {
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getReportCountries);
+        try {
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oCbxReportCountry.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+                    <span>
+                      <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getReportCountries}</a>
+                    </span>
+                  `,
+          });
+        }
+      },
+
+      /**
+       * Get data from request URL: EU Codes
+       * Put data in the combobox that corresponds to the EU codes selection
+       * @function
+       * @name fnGetEuCodes
+       */
+      fnGetEuCodes: async function () {
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getEuCodes);
+        try {
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oCbxEuCode.setModel(new JSONModel(this.oResponse.data));
+        } catch (error) {
+          MessageBox.error("Server cannot respond to the request.", {
+            details: `
+                    <span>
+                      <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.getEuCodes}</a>
+                    </span>
+                  `,
+          });
+        }
+      },
+
+      /**
+       * Start step, making requests and filling out models for comboboxes
+       * @function
+       * @name initTaxAttr
+       */
       initTaxAttr: function () {
         this.fnGetTaxJurisdiction();
         this.fnGetTaxCodes();
+        this.fnGetReportingCountries();
+        this.fnGetEuCodes();
       },
 
+      /**
+       * Make a request to validate if the tax code is accepted
+       * @function
+       * @name fnCheckTaxCode
+       */
       fnCheckTaxCode: async function () {
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.checkTaxCode,
+        this.sUrl = Methods.fnBuildUrl(
+          Constants._oUrlCodes.checkTaxCode,
           { type: "land1", value: this.oCbxCountryKey.getValue() },
           { type: "mwskz", value: this.oIptTaxCodeId.getValue().toUpperCase() },
           { type: "txjcd", value: this.oCbxTaxJur.getValue() }
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
 
           if (this.oResponse[0].status_code === "E") {
             MessageToast.show(`${this.oResponse[0].status_message}`);
@@ -470,18 +573,22 @@ sap.ui.define(
               this.fnGetConditionTypes(this.oMoreInfo.scenAdd);
             }
           }
-
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
             details: `
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.checkTaxCode}</a>
               </span>
-            `
+            `,
           });
         }
       },
 
+      /**
+       * Make a request to validate if the case is deferred and if so, show the table and the additional input
+       * @function
+       * @name fnCheckDeferredTaxInfo
+       */
       fnCheckDeferredTaxInfo: async function () {
         this.sUrl = Methods.fnBuildUrl(
           Constants._oUrlCodes.checkDeferredTaxInfo,
@@ -500,7 +607,7 @@ sap.ui.define(
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then(oResponse => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
 
           this.oContainerTableDeferred.setVisible(false);
           this.oContainerReviewTableDeferred.setVisible(false);
@@ -517,28 +624,35 @@ sap.ui.define(
             this.oStepTaxAttr.setValidated(false);
             MessageBox.error(`${this.oResponse[0].status_message}`);
           }
-
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
             details: `
               <span>
                 <strong>URL:</strong> <a href="${this.sUrl}">${Constants._oUrlCodes.checkDeferredTaxInfo}</a>
               </span>
-            `
+            `,
           });
         }
       },
 
+      /**
+       * Override step by default
+       * Validate field state
+       * Validate content of the inputs
+       * @function
+       * @name validateTaxAttr
+       * @param {Object} oEvent Event object of control
+       */
       validateTaxAttr: function (oEvent) {
-        // Set the step validation status to FALSE by default
         this.oStepTaxAttr.setValidated(false);
 
-        // Make sure an item is chosen from the data list
         Methods.fnChangeValueState(oEvent);
 
         let bValidated = Validations.fnValidStep3(
-          this.oIptTaxCodeId, this.oIptTaxName,
-          this.oCbxTaxJur, this.oCbxReportCountry,
+          this.oIptTaxCodeId,
+          this.oIptTaxName,
+          this.oCbxTaxJur,
+          this.oCbxReportCountry,
           this.oCbxTargetTaxCode
         );
 
@@ -549,14 +663,28 @@ sap.ui.define(
         }
       },
 
+      /**
+       * When "Check" button is pressed, make validations for all fields in the third step
+       * @function
+       * @name onPressValidateTaxAttr
+       */
       onPressValidateTaxAttr: function () {
         this.fnCheckDeferredTaxInfo();
       },
 
+      /**
+       * When tax attributes step is finished
+       * Make invisible "Check" button
+       * Make invisible back to second step button
+       * Disable all controls of third step
+       * Validate if the table will need remove lines
+       * @function
+       * @name onPressValidateTaxAttr
+       */
       completeTaxAttr: function () {
         this.oBtnValidateTaxAttr.setVisible(false);
         this.oBtnBackToStep2.setVisible(false);
-        this.fnChangeStateOfControlsForTheStep(3, false);
+        this.fnChangeStateOfControl(3, false);
 
         if (this.oMoreInfo.editableTable === "X") {
           this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.MultiToggle);
@@ -567,55 +695,96 @@ sap.ui.define(
         }
       },
 
+      /**
+       * Event for back to the second step button
+       * Enable all controls of the second step
+       * Clear inputs for the current step (3)
+       * Make invisible "Check" button
+       * Show button back to first step
+       * @function
+       * @name onPressBackToVatScenarios
+       */
       onPressBackToVatScenarios: function () {
-        // When you return to the previous step, enable all controls
-        this.fnChangeStateOfControlsForTheStep(2, true);
+        this.fnChangeStateOfControl(2, true);
 
-        // Clear inputs for the current step, when you return to the previous step
-        this.fnClearInputsForStep(3);
+        this.fnClearInputs(3);
         this.oBtnValidateTaxAttr.setVisible(false);
 
         this.oWizard.previousStep();
         this.oBtnBackToStep1.setVisible(true);
       },
 
-      // Step 4 --------------------------------------------
+      /**
+       * If type of tax is deferred, validate additional input for receiver
+       * Override current step by default
+       * Make validations and show "Next" button
+       * @function
+       * @name validateReceiverTaxName
+       */
       validateReceiverTaxName: function () {
         this.oStepConditionTypes.setValidated(false);
 
-        if (this.oIptReceiverTaxName.getValue().length !== 0 && this.oIptReceiverTaxName.getValue().length >=4) {
+        if (this.oIptReceiverTaxName.getValue().length !== 0 && this.oIptReceiverTaxName.getValue().length >= 4) {
           this.oStepConditionTypes.setValidated(true);
         } else {
           this.oStepConditionTypes.setValidated(false);
         }
       },
 
+      /**
+       * Execute fnSetDataForReview(Methods.js) for each case
+       * @function
+       * @name fnOrderData
+       */
       fnOrderData: function () {
         data = Methods.fnSetDataForReview(
-          this.oTableDefault, this.oTableReview,
-          this.oCbxCountryKey.getValue(), this.oTableDefault.getModel().oData[0].kalsm,
-          this.oCbxTaxType.getSelectedKey(), this.oIptTaxCodeId.getValue(),
-          this.oIptTaxName.getValue(), this.oCbxTaxJur.getValue(),
-          this.oCbxVatScenarios.getValue(), this.oChkCheckId.getSelected(),
-          this.oCbxTargetTaxCode.getValue(), this.oCbxEuCode.getValue(),
-          this.oCbxReportCountry.getValue(), this.oIptTolerance.getValue()
+          this.oTableDefault,
+          this.oTableReview,
+          this.oCbxCountryKey.getValue(),
+          this.oTableDefault.getModel().oData[0].kalsm,
+          this.oCbxTaxType.getSelectedKey(),
+          this.oIptTaxCodeId.getValue(),
+          this.oIptTaxName.getValue(),
+          this.oCbxTaxJur.getValue(),
+          this.oCbxVatScenarios.getValue(),
+          this.oChkCheckId.getSelected(),
+          this.oCbxTargetTaxCode.getValue(),
+          this.oCbxEuCode.getValue(),
+          this.oCbxReportCountry.getValue(),
+          this.oIptTolerance.getValue()
         );
 
         if (this.oMoreInfo.scenAdd !== "") {
           data_tgt = Methods.fnSetDataForReview(
-            this.oTableDeferred, this.oTableReviewDeferred,
-            this.oCbxCountryKey.getValue(), this.oTableDeferred.getModel().oData[0].kalsm,
-            this.oCbxTaxType.getSelectedKey(), this.oCbxTargetTaxCode.getValue(),
-            this.oIptReceiverTaxName.getValue(), this.oCbxTaxJur.getValue(),
-            this.oMoreInfo.scenAdd, this.oChkCheckId.getSelected(),
-            "", this.oCbxEuCode.getValue(),
-            this.oCbxReportCountry.getValue(), this.oIptTolerance.getValue()
+            this.oTableDeferred,
+            this.oTableReviewDeferred,
+            this.oCbxCountryKey.getValue(),
+            this.oTableDeferred.getModel().oData[0].kalsm,
+            this.oCbxTaxType.getSelectedKey(),
+            this.oCbxTargetTaxCode.getValue(),
+            this.oIptReceiverTaxName.getValue(),
+            this.oCbxTaxJur.getValue(),
+            this.oMoreInfo.scenAdd,
+            this.oChkCheckId.getSelected(),
+            "",
+            this.oCbxEuCode.getValue(),
+            this.oCbxReportCountry.getValue(),
+            this.oIptTolerance.getValue()
           );
         }
       },
 
-      onCompleteConditionTypes: function () {
-        this.fnChangeStateOfControlsForTheStep(4, false);
+      /**
+       * When fourth step is finished
+       * Disable current controls (step 4)
+       * Make invisible back to step 3 button
+       * Execute fnOrderData, prepare for send
+       * Set model of data
+       * @function
+       * @name completeConditionTypes
+       */
+      completeConditionTypes: function () {
+        this.fnChangeStateOfControl(4, false);
         this.oBtnBackToStep3.setVisible(false);
 
         this.fnOrderData();
@@ -625,16 +794,20 @@ sap.ui.define(
         this.oTableReviewDeferred.setModel(new JSONModel(data_tgt));
 
         this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.None);
-        this.oBtnDeleteTableDefault.setVisible(false);
+        this.oBtnDeleteTableDefault.setVisible(false); // Hide button of delete line
       },
 
+      /**
+       * When back to third step button is pressed
+       * Enable controls of third step
+       * Clear table data of current step
+       * @function
+       * @name onPressBackToStepTaxAttr
+       */
       onPressBackToStepTaxAttr: function () {
-        // When you return to the previous step, enable all controls
-        this.fnChangeStateOfControlsForTheStep(3, true);
+        this.fnChangeStateOfControl(3, true);
 
-        // Clear inputs for the current step, when you return to the previous step
-        // Show MessageBox here !!!!!!!
-        this.fnClearInputsForStep(4);
+        this.fnClearInputs(4);
 
         this.oStepTaxAttr.setValidated(false);
 
@@ -643,6 +816,11 @@ sap.ui.define(
         this.oBtnValidateTaxAttr.setVisible(true);
       },
 
+      /**
+       * Get selected lines of table and delete if the delete line button is pressed
+       * @function
+       * @name onPressDeleteConditionTypes
+       */
       onPressDeleteConditionTypes: function () {
         let oTable = this.oTableDefault;
         let indices = oTable.getSelectedIndices();
@@ -662,13 +840,19 @@ sap.ui.define(
         }
       },
 
-      // Step 5 --------------------------------------------
+      /**
+       * When back to fourth step button is pressed
+       * Enable controls of step 4
+       * Show back to step 3 button
+       * @function
+       * @name onPressBackToSetConditionTypes
+       */
       onPressBackToSetConditionTypes: function () {
-        // When you return to the previous step, enable all controls
-        this.fnChangeStateOfControlsForTheStep(4, true);
+        this.fnChangeStateOfControl(4, true);
         this.oWizard.previousStep();
         this.oBtnBackToStep3.setVisible(true);
 
+        // If the table is editable then show selection mode
         if (this.oMoreInfo.editableTable === "X") {
           this.oBtnDeleteTableDefault.setVisible(true);
           this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.MultiToggle);
@@ -677,6 +861,11 @@ sap.ui.define(
         }
       },
 
+      /**
+       * Make POST request for send all data to the server
+       * @function
+       * @name onComplete
+       */
       onComplete: function () {
         this._pBusyDialog.then(
           function (oBusyDialog) {
@@ -697,9 +886,10 @@ sap.ui.define(
             })
               .then((response) => response.json())
               .then((data) => {
-                // After a successful creation, the busy dialog closes and
-                // displays a MessageBox indicating that it has been created and the transport code.
-
+                /*
+                  After a successful creation, the busy dialog closes and
+                  displays a MessageBox indicating that it has been created.
+                */
                 if (data[0].status_code === "S") {
                   MessageBox.success("The tax code has been created successfully", {
                     actions: [MessageBox.Action.OK],
@@ -713,6 +903,7 @@ sap.ui.define(
                   MessageBox.error(`${data[0].status_message}`);
                 }
 
+                // Close busy dialog
                 this._pBusyDialog.then(function (oBusyDialog) {
                   oBusyDialog.close();
                 });

@@ -2,7 +2,7 @@
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc">
-  <WizardStep id="step-condition-types" title="{i18n>step4Title}" validated="false" activate="onActivateConditionTypes" complete="onCompleteConditionTypes">
+  <WizardStep id="step-condition-types" title="{i18n>step4Title}" validated="false" activate="onActivateConditionTypes" complete="completeConditionTypes">
     <html:div id="container-table-default">
       <core:Fragment fragmentName="taco.view.fragment.tables.TableDefault" type="XML"/>
     </html:div>
