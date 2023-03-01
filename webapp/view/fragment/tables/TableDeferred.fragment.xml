@@ -36,7 +36,7 @@
       <table:Column width="20%">
         <Label text="{i18n>lblRate}" />
         <table:template>
-          <StepInput value="0.00" displayValuePrecision="2" min="-100" max="100" step="0.5" />
+          <StepInput value="0.00" displayValuePrecision="2" min="-100" max="100" step="0.5" change="validateConditionTypes" />
         </table:template>
       </table:Column>
     </table:columns>

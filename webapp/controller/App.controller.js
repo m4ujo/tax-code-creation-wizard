@@ -10,7 +10,17 @@ sap.ui.define(
     "taco/controller/js/Constants",
     "taco/controller/js/Validations",
   ],
-  function (Controller, Fragment, syncStyleClass, JSONModel, MessageBox, MessageToast, Methods, Constants, Validations) {
+  function (
+    Controller,
+    Fragment,
+    syncStyleClass,
+    JSONModel,
+    MessageBox,
+    MessageToast,
+    Methods,
+    Constants,
+    Validations
+  ) {
     "use strict";
 
     let data = {},
@@ -62,12 +72,15 @@ sap.ui.define(
         this.oBtnBackToStep3 = this.byId("button-back-to-step3");
         this.oBtnDeleteTableDefault = this.byId("button-delete-condition-type");
         this.oIptReceiverTaxName = this.byId("input-receiver-tax-name");
+        this.oIptStep = this.byId("ipt-step");
 
         // Step 5
         this.oStepReviewAll = this.byId("step-review-all");
         this.oTableReview = this.byId("table-review");
         this.oTableReviewDeferred = this.byId("table-review-deferred");
-        this.oContainerReviewTableDeferred = this.byId("container-table-deferred-review");
+        this.oContainerReviewTableDeferred = this.byId(
+          "container-table-deferred-review"
+        );
         this.oBtnBackToStep4 = this.byId("button-back-to-step4");
 
         this.oFinalDataPost = {};
@@ -150,12 +163,15 @@ sap.ui.define(
           this.oCbxTargetTaxCode.setSelectedKey("");
           this.oIptTolerance.setValue(0.0);
         } else if (iStep === 4) {
+          this.oIptReceiverTaxName.setValue("");
           this.oTableDefault.getRows().forEach((x) => {
             x.getCells()[5].setValue(0);
+            x.getCells()[5].setValueState(Constants.oValueState.None);
           });
           if (this.oMoreInfo.scenAdd !== "") {
             this.oTableDeferred.getRows().forEach((x) => {
               x.getCells()[5].setValue(0);
+              x.getCells()[5].setValueState(Constants.oValueState.None);
             });
           }
         }
@@ -173,7 +189,9 @@ sap.ui.define(
 
         // If no exceptions are found, request the data and put a new model in this.oCbxCountry
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
           this.oCbxCountryKey.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -195,7 +213,9 @@ sap.ui.define(
       fnGetTaxTypes: async function () {
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxType);
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
           this.oCbxTaxType.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -234,10 +254,14 @@ sap.ui.define(
           { type: "mwart", value: this.oCbxTaxType.getSelectedKey() }
         );
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
 
           if (this.oResponse.data.length === 0) {
-            MessageBox.error("No scenarios were found, for the entered values.");
+            MessageBox.error(
+              "No scenarios were found, for the entered values."
+            );
           } else {
             this.oCbxVatScenarios.setModel(new JSONModel(this.oResponse.data));
             // Show next step button
@@ -302,7 +326,8 @@ sap.ui.define(
         let sAutoDeftax = "";
 
         this.oCbxCountryKey.getModel().oData.forEach((oCountry) => {
-          if (oCountry.land1 === this.oCbxCountryKey.getValue()) sAutoDeftax = oCountry.auto_deftax;
+          if (oCountry.land1 === this.oCbxCountryKey.getValue())
+            sAutoDeftax = oCountry.auto_deftax;
         });
 
         this.oCbxVatScenarios.getModel().oData.forEach((oScenario) => {
@@ -333,17 +358,23 @@ sap.ui.define(
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
 
           if (this.oResponse.data.length === 0) {
-            MessageBox.error("Condition types not found, for the entered scenario.");
+            MessageBox.error(
+              "Condition types not found, for the entered scenario."
+            );
           } else {
             if (sScenario === this.oMoreInfo.scenAdd) {
               this.oTableDeferred.setModel(new JSONModel(this.oResponse.data));
-              this.oTableDeferred.mProperties.visibleRowCount = this.oResponse.data.length;
+              this.oTableDeferred.mProperties.visibleRowCount =
+                this.oResponse.data.length;
             } else {
               this.oTableDefault.setModel(new JSONModel(this.oResponse.data));
-              this.oTableDefault.mProperties.visibleRowCount = this.oResponse.data.length;
+              this.oTableDefault.mProperties.visibleRowCount =
+                this.oResponse.data.length;
             }
             this.fnGetFieldStatus();
           }
@@ -374,10 +405,14 @@ sap.ui.define(
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
 
           if (this.oResponse.data.length === 0) {
-            MessageBox.error("Fieldstatus not found, for the entered scenario.");
+            MessageBox.error(
+              "Fieldstatus not found, for the entered scenario."
+            );
           } else {
             this.aFieldStatus = this.oResponse.data;
             this.oStepVatScenarios.setValidated(true);
@@ -450,10 +485,15 @@ sap.ui.define(
        * @name fnGetTaxJurisdiction
        */
       fnGetTaxJurisdiction: async function () {
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxJur, { type: "land1", value: this.oCbxCountryKey.getValue() });
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxJur, {
+          type: "land1",
+          value: this.oCbxCountryKey.getValue(),
+        });
 
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
           this.oCbxTaxJur.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -473,9 +513,14 @@ sap.ui.define(
        * @name fnGetTaxCodes
        */
       fnGetTaxCodes: async function () {
-        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCodes, { type: "land1", value: this.oCbxCountryKey.getValue() });
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getTaxCodes, {
+          type: "land1",
+          value: this.oCbxCountryKey.getValue(),
+        });
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
           this.oCbxTargetTaxCode.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -497,7 +542,9 @@ sap.ui.define(
       fnGetReportingCountries: async function () {
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getReportCountries);
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
           this.oCbxReportCountry.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -519,7 +566,9 @@ sap.ui.define(
       fnGetEuCodes: async function () {
         this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.getEuCodes);
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
           this.oCbxEuCode.setModel(new JSONModel(this.oResponse.data));
         } catch (error) {
           MessageBox.error("Server cannot respond to the request.", {
@@ -558,13 +607,17 @@ sap.ui.define(
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
 
           if (this.oResponse[0].status_code === "E") {
             MessageToast.show(`${this.oResponse[0].status_message}`);
             this.oStepTaxAttr.setValidated(false);
           } else if (this.oResponse[0].status_code === "S") {
-            MessageToast.show("No errors found, all required fields were validated");
+            MessageToast.show(
+              "No errors found, all required fields were validated"
+            );
             this.oBtnValidateTaxAttr.setVisible(false);
             this.oStepTaxAttr.setValidated(true);
 
@@ -584,6 +637,18 @@ sap.ui.define(
         }
       },
 
+      fnGetStepByRow: function (oTable) {
+        return oTable.getRows().every((row) => {
+          if (row.getCells()[0].getText())
+            if (
+              row.getCells()[5].getValue() > 100 ||
+              row.getCells()[5].getValue() < -100
+            )
+              return false;
+          return true;
+        });
+      },
+
       /**
        * Make a request to validate if the case is deferred and if so, show the table and the additional input
        * @function
@@ -593,7 +658,10 @@ sap.ui.define(
         this.sUrl = Methods.fnBuildUrl(
           Constants._oUrlCodes.checkDeferredTaxInfo,
           { type: "land1", value: this.oCbxCountryKey.getValue() },
-          { type: "kalsm", value: this.oTableDefault.getModel().oData[0].kalsm },
+          {
+            type: "kalsm",
+            value: this.oTableDefault.getModel().oData[0].kalsm,
+          },
           { type: "mwart", value: this.oCbxTaxType.getSelectedKey() },
           { type: "mwskz", value: this.oIptTaxCodeId.getValue() },
           { type: "mwskz_name", value: this.oIptTaxName.getValue() },
@@ -607,7 +675,9 @@ sap.ui.define(
         );
 
         try {
-          this.oResponse = await fetch(this.sUrl).then((oResponse) => oResponse.json());
+          this.oResponse = await fetch(this.sUrl).then((oResponse) =>
+            oResponse.json()
+          );
 
           this.oContainerTableDeferred.setVisible(false);
           this.oContainerReviewTableDeferred.setVisible(false);
@@ -615,7 +685,10 @@ sap.ui.define(
           if (this.oResponse[0].status_code === "S") {
             this.fnCheckTaxCode();
             this.oStepConditionTypes.setValidated(true);
-            if (this.oResponse[0].auto_deftax === "X" && this.oResponse[0].deftax_scen === "X") {
+            if (
+              this.oResponse[0].auto_deftax === "X" &&
+              this.oResponse[0].deftax_scen === "X"
+            ) {
               this.oStepConditionTypes.setValidated(false);
               this.oContainerTableDeferred.setVisible(true);
               this.oContainerReviewTableDeferred.setVisible(true);
@@ -687,7 +760,9 @@ sap.ui.define(
         this.fnChangeStateOfControl(3, false);
 
         if (this.oMoreInfo.editableTable === "X") {
-          this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.MultiToggle);
+          this.oTableDefault.setSelectionMode(
+            sap.ui.table.SelectionMode.MultiToggle
+          );
           this.oBtnDeleteTableDefault.setVisible(true);
         } else {
           this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.None);
@@ -712,23 +787,6 @@ sap.ui.define(
 
         this.oWizard.previousStep();
         this.oBtnBackToStep1.setVisible(true);
-      },
-
-      /**
-       * If type of tax is deferred, validate additional input for receiver
-       * Override current step by default
-       * Make validations and show "Next" button
-       * @function
-       * @name validateReceiverTaxName
-       */
-      validateReceiverTaxName: function () {
-        this.oStepConditionTypes.setValidated(false);
-
-        if (this.oIptReceiverTaxName.getValue().length !== 0 && this.oIptReceiverTaxName.getValue().length >= 4) {
-          this.oStepConditionTypes.setValidated(true);
-        } else {
-          this.oStepConditionTypes.setValidated(false);
-        }
       },
 
       /**
@@ -771,6 +829,29 @@ sap.ui.define(
             this.oCbxReportCountry.getValue(),
             this.oIptTolerance.getValue()
           );
+        }
+      },
+
+      /**
+       * Validation for condition types inputs
+       * @function
+       * @name validateConditionTypes
+       */
+      validateConditionTypes: function () {
+        if (this.fnGetStepByRow(this.oTableDefault)) {
+          if (this.oMoreInfo.autoDeftax === "X") {
+            if (
+              this.oIptReceiverTaxName.getValue().length !== 0 &&
+              this.oIptReceiverTaxName.getValue().length >= 4 &&
+              this.fnGetStepByRow(this.oTableDeferred)
+            )
+              this.oStepConditionTypes.setValidated(true);
+            else this.oStepConditionTypes.setValidated(false);
+          } else {
+            this.oStepConditionTypes.setValidated(true);
+          }
+        } else {
+          this.oStepConditionTypes.setValidated(false);
         }
       },
 
@@ -855,10 +936,48 @@ sap.ui.define(
         // If the table is editable then show selection mode
         if (this.oMoreInfo.editableTable === "X") {
           this.oBtnDeleteTableDefault.setVisible(true);
-          this.oTableDefault.setSelectionMode(sap.ui.table.SelectionMode.MultiToggle);
+          this.oTableDefault.setSelectionMode(
+            sap.ui.table.SelectionMode.MultiToggle
+          );
         } else {
           this.oBtnDeleteTableDefault.setVisible(false);
         }
+      },
+
+      fnPostFinalData: function () {
+        this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.postCreateTaxCode);
+
+        fetch(this.sUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+          body: JSON.stringify(this.final_data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            /*
+              After a successful creation, the busy dialog closes and
+              displays a MessageBox indicating that it has been created.
+            */
+            if (data[0].status_code === "S") {
+              MessageBox.success("The tax code has been created successfully", {
+                actions: [MessageBox.Action.OK],
+                onClose: function (sAction) {
+                  if (sAction === "OK") {
+                    window.location.reload();
+                  }
+                },
+              });
+            } else {
+              MessageBox.error(`${data[0].status_message}`);
+            }
+
+            // Close busy dialog
+            this._pBusyDialog.then(function (oBusyDialog) {
+              oBusyDialog.close();
+            });
+          });
       },
 
       /**
@@ -876,38 +995,7 @@ sap.ui.define(
               data_tgt,
             };
 
-            this.sUrl = Methods.fnBuildUrl(Constants._oUrlCodes.postCreateTaxCode);
-            fetch(this.sUrl, {
-              method: "POST",
-              headers: {
-                "Content-Type": "text/plain",
-              },
-              body: JSON.stringify(this.final_data),
-            })
-              .then((response) => response.json())
-              .then((data) => {
-                /*
-                  After a successful creation, the busy dialog closes and
-                  displays a MessageBox indicating that it has been created.
-                */
-                if (data[0].status_code === "S") {
-                  MessageBox.success("The tax code has been created successfully", {
-                    actions: [MessageBox.Action.OK],
-                    onClose: function (sAction) {
-                      if (sAction === "OK") {
-                        window.location.reload();
-                      }
-                    },
-                  });
-                } else {
-                  MessageBox.error(`${data[0].status_message}`);
-                }
-
-                // Close busy dialog
-                this._pBusyDialog.then(function (oBusyDialog) {
-                  oBusyDialog.close();
-                });
-              });
+            this.fnPostFinalData();
           }.bind(this)
         );
       },
