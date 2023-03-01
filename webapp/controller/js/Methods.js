@@ -16,8 +16,8 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
      * Build URL with code and params
      * @function
      * @name fnBuildUrl
-     * @param {String} sCode
-     * @param  {Array} aParams
+     * @param {String} sCode Get from array constant "_oUrlCodes"
+     * @param  {Array} aParams Params of the URL
      * @returns {String} Final URL
      */
     fnBuildUrl: (sCode, ...aParams) => {
