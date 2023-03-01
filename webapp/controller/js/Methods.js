@@ -21,7 +21,7 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
      * @returns {String} Final URL
      */
     fnBuildUrl: (sCode, ...aParams) => {
-      let url = `${Constants._sDomain}/${Constants._sServiceName}?sap-client=${Constants._sSapClient}&code=${sCode}`;
+      let url = `${Constants._sDomain}/${Constants._sServiceName}?sap-client=${Constants._sSapClient}&sap-language=E&code=${sCode}`;
 
       if (aParams) {
         aParams.forEach((param) => {
@@ -33,7 +33,7 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
           url += `&${param.type}=${param.value}`;
         });
       }
-
+      
       return url;
     },
 
