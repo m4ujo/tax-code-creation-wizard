@@ -15,6 +15,20 @@ sap.ui.define(["sap/ui/core/library"], function (coreLibrary) {
     _sDomain: "https://usalspgsa660.na.pg.com:8443",
 
     /**
+     * Service Name
+     * @type { String }
+     * @private
+     */
+    _sServiceName: "pg_itx",
+
+    /**
+     * SAP Client
+     * @type { String }
+     * @private
+     */
+    _sSapClient: "400",
+
+    /**
      * Regex for white spaces
      * @type { RegExp }
      * @private

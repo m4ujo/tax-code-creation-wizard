@@ -21,7 +21,7 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
      * @returns {String} Final URL
      */
     fnBuildUrl: (sCode, ...aParams) => {
-      let url = `${Constants._sDomain}/pg_itx?sap-client=400&code=${sCode}`;
+      let url = `${Constants._sDomain}/${Constants._sServiceName}?sap-client=${Constants._sSapClient}&code=${sCode}`;
 
       if (aParams) {
         aParams.forEach((param) => {
@@ -79,7 +79,7 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
     },
 
     /**
-     * Check status of fields on thir step
+     * Check status of fields on third step
      * @function
      * @name fnCheckFieldStatus
      * @param {Object} oThis
@@ -135,8 +135,6 @@ sap.ui.define(["taco/controller/js/Constants"], function (Constants) {
         lstml: aFields[10].toUpperCase(),
         tolerance: aFields[11],
       };
-
-      console.log(oHeaderData);
 
       oTable.getRows().forEach((row) => {
         if (row.getCells()[0].getText())
